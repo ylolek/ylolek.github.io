@@ -136,14 +136,8 @@
 				return null;
 			}
 
-			/*if (this.allCrawled() || (cellPos.row == this.destPos.row && cellPos.col == this.destPos.col)){
-				return null;
-			}*/
-
 			//set current cell as visited
 			this.cells[cellPos.row][cellPos.col].visited = true;
-
-
 
 			//get available directions from current cell
 			var availDirs = [];
@@ -153,9 +147,6 @@
 					availDirs.push(dir);
 				}
 			});
-
-			//console.log(cell);
-			//console.log('availDirs: ' + availDirs);
 
 			var _updateVistedCells = function(scope){
 				//update visited cells length
@@ -214,51 +205,34 @@
 			_updateVistedCells(this);
 
 			if (this.stalker){
-				//console.log('destination: ' + destDirection);
-				//console.log('available dir.: ' + availDirs);
-
 				//try step to destPos direction
 				var canGoDir = []
 
 				//check destPos direction
 				var destDirection = this.cellDirection(this.destPos, cell);
 
-				/*if (availDirs.indexOf(destDirection.closer) != -1 && !this.isCellVisited(destDirection.closer).visited){
-					canGoDir.push(destDirection.closer);
-				}else{*/
-					destDirection.directions.forEach(function(destDir){
-						if (availDirs.indexOf(destDir) != -1 && !this.isCellVisited(destDir).visited){
-							canGoDir.push(destDir)
-						}
-					}, this);
-				//}
-
-				//console.log('canGoDir: ' + canGoDir);
+				destDirection.directions.forEach(function(destDir){
+					if (availDirs.indexOf(destDir) != -1 && !this.isCellVisited(destDir).visited){
+						canGoDir.push(destDir)
+					}
+				}, this);
 
 				if (canGoDir.length > 0){
 					//step closer
 					var toCell = this.isCellVisited(_rndDirection(canGoDir));
-					//try to step in last direction
-					//var toCell = canGoDir.indexOf(this.lastDirection) != -1 && !this.isCellVisited(this.lastDirection).visited ?  this.isCellVisited(this.lastDirection) : this.isCellVisited(_rndDirection(canGoDir));
 
 					this.lastDirection = toCell.direction;
-					//return _stepToCell(this, toCell, 'next step - getting closer');
 					return this.stepToCell(toCell, 'next step - getting closer');
 				}else{
 					//cant step closer, choose a random direction
 					var rndAvailDir = [];
 
-					//try to step in current direction
-					/*if (availDirs.indexOf(this.lastDirection) != -1 && !this.isCellVisited(this.lastDirection).visited){
-						rndAvailDir.push(this.lastDirection);
-					}else{*/
-						//no way to current direction, choose one randomly
-						availDirs.forEach(function(availDir){
-							if (!this.isCellVisited(availDir).visited){
-								rndAvailDir.push(availDir);
-							}
-						}, this);
-					//}
+					//no way to current direction, choose one randomly
+					availDirs.forEach(function(availDir){
+						if (!this.isCellVisited(availDir).visited){
+							rndAvailDir.push(availDir);
+						}
+					}, this);
 
 					if (rndAvailDir.length > 0){
 						//step on a not visited cell
@@ -279,18 +253,6 @@
 						rndAvailDir.push(availDir);
 					}
 				}, this);
-
-				//try to step in current direction
-				/*if (availDirs.indexOf(this.lastDirection) != -1 && !this.isCellVisited(this.lastDirection).visited){
-					rndAvailDir.push(this.lastDirection);
-				}else{
-					//no way to current direction, choose one randomly
-					availDirs.forEach(function(availDir){
-						if (!this.isCellVisited(availDir).visited){
-							rndAvailDir.push(availDir);
-						}
-					}, this);
-				}*/
 
 				if (rndAvailDir.length > 0){
 					//can go in direction not visited
