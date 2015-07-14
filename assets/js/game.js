@@ -65,8 +65,8 @@ document.addEventListener("DOMContentLoaded", function(event){
 			isWBlur = true;
 			toDir = '';
 			cutscenes.pause();
-			sounds.pause();
-			sounds.pauseBg();
+			//sounds.pause();
+			//sounds.pauseBg();
 		})
 
 		window.addEventListener('focus', function(){
@@ -76,8 +76,8 @@ document.addEventListener("DOMContentLoaded", function(event){
 						toDir = playerDir;
 						isWBlur = false;
 						if (!paused){
-							sounds.resume();
-							sounds.resumeBg();
+							//sounds.resume();
+							//sounds.resumeBg();
 						}
 					} else{
 						cutscenes.pause();
@@ -106,13 +106,13 @@ document.addEventListener("DOMContentLoaded", function(event){
 						if (paused){
 							paused = true;
 							toDir = '';
-							sounds.pause();
-							sounds.pauseBg();
+							//sounds.pause();
+							//sounds.pauseBg();
 						}else{
 							toDir = playerDir;
 							paused = false;
-							sounds.resume();
-							sounds.resumeBg();
+							//sounds.resume();
+							//sounds.resumeBg();
 						}
 					}
 					break;
@@ -240,7 +240,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 
 					//play sound
 					dSndI = !dSndI;
-					sounds.play(dSndI ? 'dot1' : 'dot2');
+					//sounds.play(dSndI ? 'dot1' : 'dot2');
 
 					//check for collectable show time
 					if (playProps.dots == 80 || playProps.dots == 160){
@@ -344,7 +344,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 						playerAnim = playProps.gEatPts.toString();
 						_updateScores();
 
-						sounds.play('freeze-eaten', true);
+						//sounds.play('freeze-eaten', true);
 
 						ghosts.eaten(ghost.props.name);
 
@@ -361,7 +361,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 					} else if (ghost.actAnimation.name.toLowerCase().indexOf('eaten') == -1) {
 						ghosts.hangOn();
 
-						sounds.pauseBg();
+						//sounds.pauseBg();
 
 						player.gotoAndStop(3);
 						player.playAnim = false;
@@ -378,7 +378,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 						}, 1500);
 
 						var PDAID = window.setTimeout(function(){
-							sounds.play('death', true);
+							//sounds.play('death', true);
 
 							player.playAnim = true;
 							playerAnim = 'hit';
@@ -441,7 +441,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 						}
 					}, 2000);
 
-					sounds.play('collectable');
+					//sounds.play('collectable');
 				}
 			}
 
@@ -554,8 +554,8 @@ document.addEventListener("DOMContentLoaded", function(event){
 		}
 
 		var _nextLevel = function(){
-			sounds.resetSfx();
-			sounds.resetBgSfx();
+			//sounds.resetSfx();
+			//sounds.resetBgSfx();
 
 			playProps.dots = 0;
 			playProps.gEatPts = 0;
@@ -646,7 +646,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 						_showLives();
 						playProps.extraLife = true;
 
-						sounds.play('extra-life', true);
+						//sounds.play('extra-life', true);
 					}
 
 
@@ -682,7 +682,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 						//orange
 						ghosts.setTarget(playerPos.col, playerPos.row, 'otoboke', true, 20, 0);
 
-						sounds.play('stalker-on', true);
+						//sounds.play('stalker-on', true);
 
 					}else if (playProps.secs >= playProps.ghostsStalkerT && playProps.ghostsMood == 'stalker'){//wander on
 						playProps.ghostsMood = 'wander';
@@ -826,7 +826,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 				}
 
 				//sound ctrl
-				sounds.check();
+				//sounds.check();
 			}
 
 			lastTime = now;
@@ -950,7 +950,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 
 						//play intro music
 						if (!restartLevel){
-							sounds.play('start-music');
+							//sounds.play('start-music');
 							renderer.print('player one', gameImg, 107, 169, [0, 222, 222, 255]);
 						}
 
@@ -984,8 +984,8 @@ document.addEventListener("DOMContentLoaded", function(event){
 
 				canReact = false;
 
-				sounds.resetSfx();
-				sounds.resetBgSfx();
+				//sounds.resetSfx();
+				//sounds.resetBgSfx();
 
 				//gameLevel = levelIndex > maxLevels ? 0 : levelIndex;
 				if (levelIndex > maxLevels){
@@ -1030,10 +1030,10 @@ document.addEventListener("DOMContentLoaded", function(event){
 
 	//setTimeout wins
 	var initID = window.setTimeout(function(){
-		sounds.load(function(){
+		////sounds.load(function(){
 			//after sounds has loaded
 			game.playLevel(0);
-		});
+		//});
 
 		window.clearTimeout(initID);
 	}, 0);

@@ -210,10 +210,10 @@
 							renderer.rePaintCells(14, 14, 2, 1, '#000');
 
 							if (freezed) {
-								sounds.resetBgSfx();
-								if (sounds.curPlayingBg.name != 'freeze-eaten-btc') sounds.playBgLoop('power-pill', false);
+								//sounds.resetBgSfx();
+								if (//sounds.curPlayingBg.name != 'freeze-eaten-btc') //sounds.playBgLoop('power-pill', false);
 							}else {
-								sounds.resetBgSfx();
+								//sounds.resetBgSfx();
 							}
 						}
 					}
@@ -486,7 +486,7 @@
 				freezed = true;
 				freezeCtrlSec = 0;
 
-				sounds.playBgLoop('power-pill', false);
+				//sounds.playBgLoop('power-pill', false);
 				console.log('freeze start')
 			},
 
@@ -527,8 +527,8 @@
 					theGhost.entity.props.speed = eatenSpeed;
 					theGhost.dirPreStr = 'eaten_';
 
-					sounds.resetBgSfx();
-					sounds.playBgLoop('freeze-eaten-btc', true);
+					//sounds.resetBgSfx();
+					//sounds.playBgLoop('freeze-eaten-btc', true);
 
 					window.clearTimeout(GEID);
 				}, 1000);
@@ -572,7 +572,7 @@
 							}
 						});
 
-						if (sounds.curPlayingBg.name != 'freeze-eaten-btc') sounds.resetBgSfx();
+						if (//sounds.curPlayingBg.name != 'freeze-eaten-btc') //sounds.resetBgSfx();
 						freezed = false;
 						ghostsFreezed = 0;
 						freezeCtrlSec = 0;
