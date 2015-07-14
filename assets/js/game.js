@@ -239,7 +239,6 @@ document.addEventListener("DOMContentLoaded", function(event){
 					renderer.reDrawCells(gameImg, playerCell.col, playerCell.row, 0, 0, render.layout.context);
 
 					//play sound
-					//dSndI = toDir == playerDir ? !dSndI : true;
 					dSndI = !dSndI;
 					sounds.play(dSndI ? 'dot1' : 'dot2');
 
@@ -250,7 +249,6 @@ document.addEventListener("DOMContentLoaded", function(event){
 					}
 
 					//all dots eaten
-					//if (playProps.dots >= 5){
 					if (playProps.dots >= playProps.maxDots){
 						_nextLevel();
 					}
@@ -306,7 +304,6 @@ document.addEventListener("DOMContentLoaded", function(event){
 					//repos player on pathway end
 					if (needRepos){
 						needRepos = false;
-						//console.log('repos pathway end' + ' ' + isPathWay + ' ' + toDir + ' ' + playerDir);
 					}
 				}
 			}
@@ -324,9 +321,9 @@ document.addEventListener("DOMContentLoaded", function(event){
 					playProps.gEatPts = 0;
 					_updateScores();
 
-					console.log('hit with powerpill: ' + index);
+					//console.log('hit with powerpill: ' + index);
 					powerpills.splice(index, 1);
-					console.log('powerpills: ' + powerpills);
+					//console.log('powerpills: ' + powerpills);
 
 					ghosts.freeze();
 				}
@@ -334,14 +331,11 @@ document.addEventListener("DOMContentLoaded", function(event){
 
 			//check for hit with ghosts
 			theGhosts.some(function(ghost){
-				//var ghostCell = renderer.XYToColRow(ghost.position.x + ghost.clip.width / 2, ghost.position.y + ghost.clip.height / 2);
-				//var ghostCell = renderer.XYToColRow(ghost.position.x + ghost.clip.width / 2.2, ghost.position.y + ghost.clip.height / 2.2);
-				//if (playerCell.col == ghostCell.col && playerCell.row == ghostCell.row){
 				var playerMidX = player.position.x + player.clip.width / 2;
 				var playerMidY = player.position.y + player.clip.height / 2;
 				if ( (playerMidX > ghost.position.x && playerMidX < ghost.position.x + ghost.clip.width) && (playerMidY > ghost.position.y && playerMidY < ghost.position.y + ghost.clip.height)){
 					if (ghost.actAnimation.name.toLowerCase() == 'freeze' || ghost.actAnimation.name.toLowerCase() == 'freeze_ending'){
-						console.log('freeze hit')
+						//console.log('freeze hit')
 
 						canReact = false;
 						playProps.gEatPts = playProps.gEatPts == 0 ? 200 : 2 * playProps.gEatPts
@@ -365,10 +359,6 @@ document.addEventListener("DOMContentLoaded", function(event){
 						}, 1200);
 
 					} else if (ghost.actAnimation.name.toLowerCase().indexOf('eaten') == -1) {
-						console.log('hit, with: ' + ghost.props.name );
-						//console.log('player cell -  col: ' + playerCell.col + ', row: ' + playerCell.row);
-						//console.log('ghost cell -  col: ' + ghostCell.col + ', row: ' + ghostCell.row);
-
 						ghosts.hangOn();
 
 						sounds.pauseBg();
@@ -557,7 +547,6 @@ document.addEventListener("DOMContentLoaded", function(event){
 
 			renderer.print('game over', gameImg, 114, 241, [222, 0, 0, 255]);
 			var GOID = window.setTimeout(function(){
-				//game.playLevel(0);
 				window.location.reload();
 
 				window.clearTimeout(GOID);
@@ -671,17 +660,10 @@ document.addEventListener("DOMContentLoaded", function(event){
 
 						ghosts.portalsOpen();
 
-						console.log('stalker mode on, for: ' + playProps.ghostsStalkerT + 's');
-
-						//ghost speed up
-						//var dotsPerc = Math.round(playProps.dots / playProps.maxDots * 100);
-
 						var speedLRatio = gameLevel >= 5 ? 4 : 2;
 						ghosts.setSpeed(playProps.ghostsSpeed + speedLRatio);
-						//console.log('ghosts speed: ' + (playProps.ghostsSpeed + speedLRatio));
 
 						ghosts.setSpeed(playProps.ghostsSpeed + 4 + playProps.ghostsSpeed * 5 / 100, 'oikake');
-						//console.log('oikake speed: ' + (playProps.ghostsSpeed + 4 + playProps.ghostsSpeed * 5 / 100));
 
 						var MBCol = playerDir == 'left' ? playerPos.col - 4 : playerPos.col + 4;
 						var MBRow = playerDir == 'up' ? playerPos.row - 4 : playerPos.row + 4;
@@ -690,27 +672,15 @@ document.addEventListener("DOMContentLoaded", function(event){
 						ghosts.setTarget(playerPos.col, playerPos.row, 'oikake', true, 20, maxVisCells);
 
 						//cyam
-						//KTID = window.setTimeout(function(){
-							var KGCol = playerDir == 'left' ? playerPos.col - 2 : playerPos.col + 2;
-							var KGRow = playerDir == 'up' ? playerPos.row - 2 : playerPos.row + 2;
-							ghosts.setTarget(KGCol , KGRow, 'kimagure', true, 20, maxVisCells);
-
-						/*	window.clearTimeout(KTID);
-						}, Math.random() * .5 + .2);*/
+						var KGCol = playerDir == 'left' ? playerPos.col - 2 : playerPos.col + 2;
+						var KGRow = playerDir == 'up' ? playerPos.row - 2 : playerPos.row + 2;
+						ghosts.setTarget(KGCol , KGRow, 'kimagure', true, 20, maxVisCells);
 
 						//pink
-						//MTID = window.setTimeout(function(){
-							ghosts.setTarget(MBCol, MBRow, 'machibuse', true, 20, maxVisCells);
-
-						/*	window.clearTimeout(MTID);
-						}, Math.random() * .5 + .2);*/
+						ghosts.setTarget(MBCol, MBRow, 'machibuse', true, 20, maxVisCells);
 
 						//orange
-						//OTID = window.setTimeout(function(){
-							ghosts.setTarget(playerPos.col, playerPos.row, 'otoboke', true, 20, 0);
-
-						/*	window.clearTimeout(OTID);
-						}, Math.random() * .5 + .2);*/
+						ghosts.setTarget(playerPos.col, playerPos.row, 'otoboke', true, 20, 0);
 
 						sounds.play('stalker-on', true);
 
@@ -718,11 +688,8 @@ document.addEventListener("DOMContentLoaded", function(event){
 						playProps.ghostsMood = 'wander';
 						playProps.secs = 0;
 
-						console.log('wander mode on, for: ' + playProps.ghostsWanderT + 's');
-
 						//ghost slow down
 						ghosts.setSpeed(playProps.ghostsSpeed);
-						//console.log('ghosts speed: ' + playProps.ghostsSpeed);
 
 						ghosts.portalsClose();
 						ghosts.spreadOut();
@@ -735,64 +702,42 @@ document.addEventListener("DOMContentLoaded", function(event){
 
 					//stalker retry
 					if (playProps.ghostsMood == 'stalker' && playProps.reTrySec >= (gameLevel > 5 ? 1 : 2)){
-						//ghosts.portalsOpen();
-
 						if (_playerInShelter() && playProps.ghostsMood != 'wander') {
-							console.log('shelter');
+							//console.log('shelter');
 							playProps.ghostsMood = 'wander';
-							//playProps.secs = playProps.ghostsStalkerT;
 						}
 
 						//ghost speed up
 						var speedLRatio = gameLevel >= 5 ? 4 : 2;
-						//var ghostsReTSpeed = playProps.ghostsSpeed + speedLRatio + ( Math.min(35, playProps.dots / playProps.maxDots * 100) * speedLRatio / 100 );
-						//ghosts.setSpeed(ghostsReTSpeed);
 						ghosts.setSpeed(playProps.ghostsSpeed + speedLRatio + playProps.ghostsSpeed * 5 / 100, 'oikake')
-
-						/*console.log('retry ghosts start speed: ' +  playProps.ghostsSpeed);
-						console.log('ghosts retry speed: ' + ghostsReTSpeed)
-						console.log('dots perc: ' + (playProps.dots / playProps.maxDots * 100));
-						console.log('dots perc max: ' + (Math.min(35, playProps.dots / playProps.maxDots * 100)));
-						console.log('dots: ' + playProps.dots + ' max dots: ' + playProps.maxDots)*/
 
 						//red
 						ghosts.setTarget(playerPos.col, playerPos.row, 'oikake', true, 20, maxVisCells);
 
 						//cyan
-						//KTID = window.setTimeout(function(){
-							var OIKEnt = _getGhostByName('oikake');
-							var OIKPos = renderer.XYToColRow(OIKEnt.position.x, OIKEnt.position.y);
-							var OIKPRDist = Math.abs(OIKPos.row - playerPos.row);
-							var OIKPCDist = Math.abs(OIKPos.col - playerPos.col);
-							if (OIKPCDist <= 5 && OIKPRDist <=5){
-								//var KGCol = playerDir == 'left' ? playerPos.col - OIKPCDist * 2 : playerPos.col + OIKPCDist * 2;
-								//var KGRow = playerDir == 'up' ? playerPos.row - OIKPRDist * 2 : playerPos.row + OIKPRDist * 2;
+						var OIKEnt = _getGhostByName('oikake');
+						var OIKPos = renderer.XYToColRow(OIKEnt.position.x, OIKEnt.position.y);
+						var OIKPRDist = Math.abs(OIKPos.row - playerPos.row);
+						var OIKPCDist = Math.abs(OIKPos.col - playerPos.col);
+						if (OIKPCDist <= 5 && OIKPRDist <=5){
+							//var KGCol = playerDir == 'left' ? playerPos.col - OIKPCDist * 2 : playerPos.col + OIKPCDist * 2;
+							//var KGRow = playerDir == 'up' ? playerPos.row - OIKPRDist * 2 : playerPos.row + OIKPRDist * 2;
 
-								var KGCol = playerDir == 'left' ? playerPos.col - OIKPCDist  : playerPos.col + OIKPCDist * 2;
-								var KGRow = playerDir == 'up' ? playerPos.row - OIKPRDist  : playerPos.row + OIKPRDist * 2;
-							}else{
-								var KGCol = playerDir == 'left' ? playerPos.col - 2 : playerPos.col + 2;
-								var KGRow = playerDir == 'up' ? playerPos.row - 2 : playerPos.row + 2;
-							}
-							ghosts.setTarget(KGCol , KGRow, 'kimagure', true, 20, maxVisCells);
-
-						/*	window.clearTimeout(KTID);
-						}, Math.random() * .5 + .2);*/
-
+							var KGCol = playerDir == 'left' ? playerPos.col - OIKPCDist  : playerPos.col + OIKPCDist * 2;
+							var KGRow = playerDir == 'up' ? playerPos.row - OIKPRDist  : playerPos.row + OIKPRDist * 2;
+						}else{
+							var KGCol = playerDir == 'left' ? playerPos.col - 2 : playerPos.col + 2;
+							var KGRow = playerDir == 'up' ? playerPos.row - 2 : playerPos.row + 2;
+						}
+						ghosts.setTarget(KGCol , KGRow, 'kimagure', true, 20, maxVisCells);
 
 						//pink
-						//MTID = window.setTimeout(function(){
-							var MBCol = playerDir == 'left' ? playerPos.col - 4 : playerPos.col + 4;
-							var MBRow = playerDir == 'up' ? playerPos.row - 4 : playerPos.row + 4;
-							ghosts.setTarget(MBCol, MBRow, 'machibuse', true, 20, maxVisCells);
-
-						/*	window.clearTimeout(MTID);
-						}, Math.random() * .5 + .2);*/
+						var MBCol = playerDir == 'left' ? playerPos.col - 4 : playerPos.col + 4;
+						var MBRow = playerDir == 'up' ? playerPos.row - 4 : playerPos.row + 4;
+						ghosts.setTarget(MBCol, MBRow, 'machibuse', true, 20, maxVisCells);
 
 						playProps.reTrySec = 0;
 						playProps.xReTrySec = 0;
-
-						//console.log('stalker mode, ambush retry')
 					}
 
 					//extras
@@ -803,7 +748,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 						var OIKPCDist = Math.abs(OIKPos.col - playerPos.col);
 
 						if (OIKPRDist <= 2 && OIKPCDist <= 5){
-							console.log('oikake closing in')
+							//console.log('oikake closing in')
 							ghosts.setTarget(playerPos.col, playerPos.row, 'oikake', true, 1, maxVisCells);
 						}
 
@@ -884,14 +829,6 @@ document.addEventListener("DOMContentLoaded", function(event){
 				sounds.check();
 			}
 
-				/*var fps = 1 / deltaT;
-				fpsUT += 8 * deltaT;
-				if (fpsUT > 4){
-					renderer.print(fps.toPrecision(4) + ' fps', gameImg, 200, 20);
-					fpsUT = 1;
-				}*/
-
-
 			lastTime = now;
 			aF = requestAnimFrame(_play);
 		}
@@ -934,7 +871,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 					player.canMove = true;
 					player.playAnim = true;
 
-					console.log('playerspeed: ' + player.props.speed);
+					//console.log('playerspeed: ' + player.props.speed);
 
 					if (buildIndex == 0){//intro anim
 						//we just need the ghost entities here
@@ -1031,7 +968,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 					//load error
 				});
 			}catch(err){
-				console.log(err);
+				//console.log(err);
 			}
 		}
 
@@ -1057,7 +994,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 					gameLevel = levelIndex;
 				}
 
-				console.log(gameLevel)
+				//console.log(gameLevel)
 
 
 				playerCellType = playerAnim = playerDir = toDir = '';
@@ -1079,11 +1016,9 @@ document.addEventListener("DOMContentLoaded", function(event){
 				playProps.maxDots = buildIndex == 0 ? 0 : layouts.getCellsByType(buildIndex, ['xxxpwc']).length,
 				playProps.ghostsMood = 'wander';
 
-				//playProps.levelSRatio = gameLevel > 5 ? 6 : 8;
 				playProps.levelSRatio = gameLevel > 5 ? 6 : 4;
-				//playProps.ghostsSpeed = Math.min(100, 79 + gameLevel * playProps.levelSRatio);
 				playProps.ghostsSpeed = Math.min(100, 70 + gameLevel * playProps.levelSRatio);
-				console.log('ghostsSpeed: ' + playProps.ghostsSpeed)
+				//console.log('ghostsSpeed: ' + playProps.ghostsSpeed)
 
 				_loadResources(buildIndex);
 

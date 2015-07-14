@@ -103,9 +103,6 @@
 				//position correction. center ghost to cell, if needRepos
 				if (ghost.needRepos){
 					var cell = renderer.ColRowToXY(cellPos.col, cellPos.row);
-					//var stepI = Math.max(0, ghost.actStep - 1);
-					//var cell = renderer.ColRowToXY(ghost.nextCells[stepI].col, ghost.nextCells[stepI].row);
-
 					var corX = cell.x - cellWidth / 2 - ghost.entity.position.x;
 					var corY = cell.y - cellHeight / 2 - ghost.entity.position.y + 1;
 
@@ -115,13 +112,9 @@
 						ghost.entity.position.y += corY;
 
 					}else{
-						/*ghost.entity.position.x += ghost.inCage || ghost.freezed ? corX / (ghost.entity.props.speed * (3.2 * deltaT) ) : corX / (ghost.entity.props.speed * (1.28 * deltaT) );
-						ghost.entity.position.y += ghost.inCage || ghost.freezed ? corY / (ghost.entity.props.speed * (3.2 * deltaT) ) : corY / (ghost.entity.props.speed * (1.28 * deltaT);*/
-
 						var reposT = actGhostsSpeed < 92 ? .02 : .014;
 						ghost.entity.position.x += ghost.inCage || ghost.freezed ? corX / (ghost.entity.props.speed * .08 ) : corX / (ghost.entity.props.speed * reposT );
 						ghost.entity.position.y += ghost.inCage || ghost.freezed ? corY / (ghost.entity.props.speed * .08 ) : corY / (ghost.entity.props.speed * reposT );
-
 					}
 
 					if (Math.round(corX) == 0 && Math.round(corY) == 0){
@@ -432,11 +425,7 @@
 								break;
 						}
 
-						//c = r = 1;
 						ghost.router.setRoute({ row : curPos.row, col : curPos.col}, { row : r, col : c}, stalker);
-
-						//ghost.router.paused = false;
-						//firstStep = true;
 
 						ghost.stepBuffLen = 20;
 						ghost.nextCells = [];
@@ -526,7 +515,6 @@
 
 				var ghostCellPos = renderer.XYToColRow(theGhost.entity.position.x + theGhost.entity.clip.width / 2, theGhost.entity.position.y + theGhost.entity.clip.height / 2);
 				startCell = {col: 14, row: 12};
-				//startCell = renderer.XYToColRow(theGhost.entity.props.startPos.x, theGhost.entity.props.startPos.y);
 				theGhost.router.setRoute(ghostCellPos, startCell, true);
 				theGhost.stepBuffLen = 20;
 				theGhost.maxVisitedCells = 0;
@@ -653,7 +641,6 @@
 				ghostsFreezed = 0;
 				freezed = false;
 				freezeSec = Math.max(.8, 6 - gameLevel);
-				//freezeSec = 20;
 				freezeEndSec = Math.max(.4, 4 - gameLevel * .4);
 				targetPos = targetPos;
 
@@ -667,16 +654,12 @@
 
 				var ghostEntities = [];
 
-				//ghostArr.length = 1;
-
 				ghostArr.forEach(function(ghost, index){
 					theGhosts.push(ghost)
 
 					//create ghost entity
 					theGhosts[index].entity = new entity(ghost);
 
-					//start speed
-					//ghost.entity.props.speed = Math.round(Math.random() * 10) + 90;
 					ghost.stepBuffLen = 20;
 					ghost.actStep = 0;
 					ghost.inTeleport = false;
@@ -691,9 +674,6 @@
 
 					if (ghost.name.toLowerCase() != 'oikake' && ghost.name.toLowerCase() != 'machibuse'){
 						ghost.inCage = true;
-
-						/*var cellPos = renderer.XYToColRow(ghost.entity.position.x + ghost.entity.clip.width / 2, ghost.entity.position.y + ghost.entity.clip.height / 2)
-						console.log(cellPos);*/
 					}
 
 					//create ghosts router

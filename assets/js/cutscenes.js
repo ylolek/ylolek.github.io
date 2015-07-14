@@ -65,10 +65,6 @@
 				ctx.clearRect(0, 200, gameWidth, 75);
 				ctx.clearRect(104, 297, 25, 25);
 
-				//renderer.print('credit 0', gameImg, 8, 365);
-				//renderer.print('insert coin', gameImg, 190, 365, [33, 33, 255, 255]);
-
-
 				if (sceneProps[0].printI == 0){
 					renderer.print('press start', gameImg, 8, 365, [4, 166, 121, 255]);
 					sceneProps[0].printI++;

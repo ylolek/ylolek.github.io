@@ -71,9 +71,6 @@
 				var _frame = Math.min(this.actAnimProps.frames, Math.floor(this.actAnimation.frame));
 			}
 
-			/*this.clip.x = this.actAnimProps.clipSX + (_frame - 1) * (this.clip.width * this.actAnimProps.clipStep);
-			this.clip.y = this.actAnimProps.clipSY;*/
-
 			if (this.actAnimProps.frame instanceof Array && this.actAnimProps.frame[_frame - 1] != null){
 				var clipX = this.actAnimProps.frame[_frame - 1].x;
 				var clipY = this.actAnimProps.frame[_frame - 1].y;
@@ -146,11 +143,9 @@
 			if (this.props.speedFRD){
 				//speed calculation, assuming a maximum of 60 fps
 				var curFPS = 1 / deltaT;
-				//var FPSPerc = curFPS / 60 * 100;
 				var FPSPerc = Math.min(60, curFPS) / 60 * 100;
 				//min 5 pixels
 				var speed = Math.max(5, Math.min(this.props.speed, (this.props.speed * FPSPerc / 100)));
-				//var speed = Math.min(this.props.speed, (this.props.speed * FPSPerc / 100));
 			}else {
 				var speed = this.props.speed;
 			}
