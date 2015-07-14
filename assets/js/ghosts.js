@@ -209,12 +209,12 @@
 
 							renderer.rePaintCells(14, 14, 2, 1, '#000');
 
-							if (freezed) {
-								//sounds.resetBgSfx();
-								if (//sounds.curPlayingBg.name != 'freeze-eaten-btc') //sounds.playBgLoop('power-pill', false);
+							/*if (freezed) {
+								sounds.resetBgSfx();
+								if (sounds.curPlayingBg.name != 'freeze-eaten-btc') sounds.playBgLoop('power-pill', false);
 							}else {
-								//sounds.resetBgSfx();
-							}
+								sounds.resetBgSfx();
+							}*/
 						}
 					}
 				}
@@ -487,7 +487,7 @@
 				freezeCtrlSec = 0;
 
 				//sounds.playBgLoop('power-pill', false);
-				console.log('freeze start')
+				//console.log('freeze start')
 			},
 
 			eaten : function(ghostName){
@@ -562,7 +562,7 @@
 						}, this);
 
 					}else{
-						console.log('freezed end')
+						//console.log('freezed end')
 						theGhosts.forEach(function(ghost, index){
 							if (ghost.entity.actAnimation.name.toLowerCase() == 'freeze_ending') ghost.entity.actAnimation.anchor = false;
 							ghost.freezed = false;
@@ -572,7 +572,7 @@
 							}
 						});
 
-						if (//sounds.curPlayingBg.name != 'freeze-eaten-btc') //sounds.resetBgSfx();
+						//if (sounds.curPlayingBg.name != 'freeze-eaten-btc') sounds.resetBgSfx();
 						freezed = false;
 						ghostsFreezed = 0;
 						freezeCtrlSec = 0;
