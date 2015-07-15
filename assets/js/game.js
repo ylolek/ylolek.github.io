@@ -163,35 +163,35 @@ document.addEventListener("DOMContentLoaded", function(event){
 		var _isPathWay = function(direction){
 			//XXXPWE, XXXPWC are the pathways
 			var pways = ['xxxpwe', 'xxxpwc', 'xxxpwp', 'xx1hts', 'xx2hts', 'xx3hts', 'xx5hts', 'xx7hts', 'xxxxhe', 'xxxxte'];
-			var playerMatrixPos = renderer.XYToColRow(player.position.x + player.clip.width / 2, player.position.y + player.clip.height / 2);
+			var playerCell = renderer.XYToColRow(player.position.x + player.clip.width / 2, player.position.y + player.clip.height / 2);
 			var layout = actLevel.layout;
 			var isPathWay = false;
 
 			switch (direction.toLowerCase()){
 				case 'up' :
-					var rowIndex = Math.max(0, playerMatrixPos.row - 1);
-					var cellVal = layout[rowIndex][playerMatrixPos.col];
+					var rowIndex = Math.max(0, playerCell.row - 1);
+					var cellVal = layout[rowIndex][playerCell.col];
 					isPathWay = pways.indexOf(cellVal.toLowerCase()) == -1 ? false : true;
 
 					break;
 
 				case 'down' :
-					var rowIndex = Math.min(layout.length - 1, playerMatrixPos.row + 1);
-					var cellVal = layout[rowIndex][playerMatrixPos.col];
+					var rowIndex = Math.min(layout.length - 1, playerCell.row + 1);
+					var cellVal = layout[rowIndex][playerCell.col];
 					isPathWay = pways.indexOf(cellVal.toLowerCase()) == -1 ? false : true;
 
 					break;
 
 				case 'left' :
-					var colIndex = Math.max(0, playerMatrixPos.col - 1);
-					var cellVal = layout[playerMatrixPos.row][colIndex];
+					var colIndex = Math.max(0, playerCell.col - 1);
+					var cellVal = layout[playerCell.row][colIndex];
 					isPathWay = pways.indexOf(cellVal.toLowerCase()) == -1 ? false : true;
 
 					break;
 
 				case 'right' :
-					var colIndex = Math.min(layout[playerMatrixPos.row].length - 1, playerMatrixPos.col + 1);
-					var cellVal = layout[playerMatrixPos.row][colIndex];
+					var colIndex = Math.min(layout[playerCell.row].length - 1, playerCell.col + 1);
+					var cellVal = layout[playerCell.row][colIndex];
 					isPathWay = pways.indexOf(cellVal.toLowerCase()) == -1 ? false : true;
 
 					break;
@@ -286,16 +286,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 				playerDir = toDir;
 				isPathWay = true;
 			}else{
-				//uncomment toDir = '';, if you want exact match for pathways and cursor keys.
-				//eg.:
-				//	lets say the player is moving left. up arrow key pressed, but there isnt patway upwards in the moment of the keypress
-				//	player will not turn up at the next upward pathway, will continue its way to left.
-
-				//leave in comment if you dont.
-				//eg.:
-				//	lets say the player is moving left. up arrow key pressed, but there isnt patway upwards in the moment of the keypress
-				//	player will still turn up at the next upward pathway
-
+				//uncomment toDir = ''; to exact match for pathways and cursor keys.
 				//toDir = '';
 				 if (_isPathWay(playerDir)){
 					isPathWay = true;
@@ -333,7 +324,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 			theGhosts.some(function(ghost){
 				var playerMidX = player.position.x + player.clip.width / 2;
 				var playerMidY = player.position.y + player.clip.height / 2;
-				if ( (playerMidX > ghost.position.x && playerMidX < ghost.position.x + ghost.clip.width) && (playerMidY > ghost.position.y && playerMidY < ghost.position.y + ghost.clip.height)){
+				if ((playerMidX > ghost.position.x && playerMidX < ghost.position.x + ghost.clip.width) && (playerMidY > ghost.position.y && playerMidY < ghost.position.y + ghost.clip.height)){
 					if (ghost.actAnimation.name.toLowerCase() == 'freeze' || ghost.actAnimation.name.toLowerCase() == 'freeze_ending'){
 						//console.log('freeze hit')
 
@@ -358,45 +349,49 @@ document.addEventListener("DOMContentLoaded", function(event){
 							player.playAnim = true;
 						}, 1200);
 
-					} else if (ghost.actAnimation.name.toLowerCase().indexOf('eaten') == -1) {
-						ghosts.hangOn();
+					} else if (ghost.actAnimation.name.toLowerCase().indexOf('eaten') == -1){
+						//more tolerant hit check with cell pos.
+						var ghostCell = renderer.XYToColRow(ghost.position.x + ghost.clip.width / 2, ghost.position.y + ghost.clip.height / 2);
+						if (ghostCell.row == playerCell.row && ghostCell.col == playerCell.col){
+							ghosts.hangOn();
 
-						//sounds.pauseBg();
+							//sounds.pauseBg();
 
-						player.gotoAndStop(3);
-						player.playAnim = false;
-						canReact = false;
+							canReact = false;
+							player.playAnim = false;
+							player.gotoAndStop(3);
 
-						playProps.doMoodSwitch = false;
-						playProps.lives--;
+							playProps.doMoodSwitch = false;
+							playProps.lives--;
 
-						var GCID = window.setTimeout(function(){
-							showGhosts = false;
-							ghosts.erase();
+							var GCID = window.setTimeout(function(){
+								showGhosts = false;
+								ghosts.erase();
 
-							window.clearTimeout(GCID);
-						}, 1500);
+								window.clearTimeout(GCID);
+							}, 1500);
 
-						var PDAID = window.setTimeout(function(){
-							//sounds.play('death', true);
+							var PDAID = window.setTimeout(function(){
+								//sounds.play('death', true);
 
-							player.playAnim = true;
-							playerAnim = 'hit';
+								player.playAnim = true;
+								playerAnim = 'hit';
 
-							window.clearTimeout(PDAID);
-						}, 1700);
+								window.clearTimeout(PDAID);
+							}, 1700);
 
-						var LRID = window.setTimeout(function(){
-							paused = true;
+							var LRID = window.setTimeout(function(){
+								paused = true;
 
-							if (playProps.lives <= 0){
-								_gameOver();
-							}else{
-								_restartLevel();
-							}
+								if (playProps.lives <= 0){
+									_gameOver();
+								}else{
+									_restartLevel();
+								}
 
-							window.clearTimeout(LRID);
-						}, 4500);
+								window.clearTimeout(LRID);
+							}, 4500);
+						}
 					}
 				}
 			});
@@ -547,9 +542,9 @@ document.addEventListener("DOMContentLoaded", function(event){
 
 			renderer.print('game over', gameImg, 114, 241, [222, 0, 0, 255]);
 			var GOID = window.setTimeout(function(){
-				window.location.reload();
-
 				window.clearTimeout(GOID);
+
+				window.location.reload();
 			}, 2000);
 		}
 
@@ -578,10 +573,6 @@ document.addEventListener("DOMContentLoaded", function(event){
 		var _restartLevel = function(){
 			restartLevel = true;
 			game.playLevel(gameLevel);
-		}
-
-		var _showUpCCollectable = function(){
-
 		}
 
 		var _getGhostByName = function(name){
@@ -890,7 +881,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 						//ghosts speed
 						ghosts.setSpeed(playProps.ghostsSpeed)
 
-						//reverse ghosts orders, so the first draws latly on top of others
+						//reverse ghosts orders, so the first draws lastly on top of others
 						theGhosts.reverse();
 
 						//collectables
@@ -917,18 +908,20 @@ document.addEventListener("DOMContentLoaded", function(event){
 
 						//show ghosts
 						var ghostsShow = window.setTimeout(function(){
+							window.clearTimeout(ghostsShow);
+
 							//clear 'player one' print
 							renderer.clr(render.console.context, 0, 36, gameWidth, 200);
 
 							showGhosts = true;
 							ghosts.dontHangOn();
-
-							window.clearTimeout(ghostsShow);
 						}, (restartLevel ? 0 : 2000));
 
 						//start player
 						var playerStart = window.setTimeout(function(){
 							if (paused){
+								window.clearTimeout(playerStart);
+
 								//clear console
 								renderer.clr(render.console.context, 0, 36, gameWidth, gameHeight);
 
@@ -943,8 +936,6 @@ document.addEventListener("DOMContentLoaded", function(event){
 								_playerCtrl();
 
 								canReact = true;
-
-								window.clearTimeout(playerStart);
 							}
 						}, (restartLevel ? 2000 : 4200));
 
@@ -960,7 +951,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 
 					restartLevel = false;
 
-					//start game loop
+					//start gameloop
 					_play();
 
 				},
@@ -987,7 +978,6 @@ document.addEventListener("DOMContentLoaded", function(event){
 				//sounds.resetSfx();
 				//sounds.resetBgSfx();
 
-				//gameLevel = levelIndex > maxLevels ? 0 : levelIndex;
 				if (levelIndex > maxLevels){
 					gameLevel = levelIndex = 0;
 				}else {
@@ -1030,11 +1020,11 @@ document.addEventListener("DOMContentLoaded", function(event){
 
 	//setTimeout wins
 	var initID = window.setTimeout(function(){
+		window.clearTimeout(initID);
+
 		////sounds.load(function(){
 			//after sounds has loaded
 			game.playLevel(0);
 		//});
-
-		window.clearTimeout(initID);
 	}, 0);
 });
