@@ -15,12 +15,12 @@
 				padding: 5% 0;
 				background: #000;
 
-				font: 14px sans, sans-serif;
+				font: 12px sans, sans-serif;
 			}
 
 			p{
 				color: #8f8c8c;
-				margin: 5px 5%;
+				margin: 5px 0;
 			}
 
 			a:link, a:visited, a:active{
@@ -30,14 +30,26 @@
 			a:hover{
 				text-decoration: none;
 			}
+
+			#game{
+				height: 452px;
+				margin-bottom: 40px;
+			}
+
+			.info{
+				width: 336px;
+				margin: 0 auto;
+			}
 		</style>
 	</head>
 	<body>
 		<div id="game"></div>
-		<p><strong>w, s, a, d</strong> or <strong>arrow keys</strong> to navigate. <strong>esc</strong> to puase.</p>
-		<br/>
-		<p>Original spritemap from <a href="https://github.com/rm-hull/big-bang/blob/master/examples/pacman/data/spritemap-384.png" target="_blank">rm-hull</a>.</p>
-		<p>PAC-MAN&#8482; &amp; &copy;1980 NAMCO BANDAI Games Inc.</p>
+		<div class="info">
+			<p><strong>w, s, a, d</strong> or <strong>arrow keys</strong> to navigate. <strong>esc</strong> to puase.</p>
+			<br/>
+			<p>Original spritemap from <a href="https://github.com/rm-hull/big-bang/blob/master/examples/pacman/data/spritemap-384.png" target="_blank">rm-hull</a>.</p>
+			<p>PAC-MAN&#8482; &amp; &copy;1980 NAMCO BANDAI Games Inc.</p>
+		</div>
 
 		<script src="assets/js/assets.js"></script>
 		<script src="assets/js/error.js"></script>

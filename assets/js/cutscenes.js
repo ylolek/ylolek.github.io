@@ -66,7 +66,7 @@
 				ctx.clearRect(104, 297, 25, 25);
 
 				if (sceneProps[0].printI == 0){
-					renderer.print('press start', gameImg, 8, 365, [4, 166, 121, 255]);
+					renderer.print('press space', gameImg, 8, 365, [4, 166, 121, 255]);
 					sceneProps[0].printI++;
 				}
 

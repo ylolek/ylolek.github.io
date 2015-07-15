@@ -1,10 +1,32 @@
 
 	var ghosts = (function(){
-		var theGhosts = [], playGround = {}, pathways = [], lastSpeeds = [], targetPos = {};
-		var startTime, gameWidth, gameHeight, cellWidth, cellHeight, actLevel, dotsEaten;
+		var theGhosts = [],
+			playGround = {},
+			pathways = [],
+			lastSpeeds = [],
+			targetPos = {};
 
-		var firstStep = true, canUsePortals = false, paused = false, freezed = false;
-		var secs = freezeSec = freezeEndSec = freezeCtrlSec = 0, freezeSpeed = inCageSpeed = 50, eatenSpeed = 220, actGhostsSpeed = 0, ghostsFreezed = 0;
+		var startTime,
+			gameWidth,
+			gameHeight,
+			cellWidth,
+			cellHeight,
+			actLevel,
+			dotsEaten;
+
+		var firstStep = true,
+			canUsePortals = false,
+			paused = false,
+			freezed = false;
+
+		var secs = 0,
+			freezeSec = 0,
+			freezeEndSec = 0,
+			freezeCtrlSec = 0,
+			freezeSpeed = inCageSpeed = 50,
+			eatenSpeed = 220,
+			actGhostsSpeed = 0,
+			ghostsFreezed = 0;
 
 		var _getCells = function(valueArr){
 			var matchArr = [];

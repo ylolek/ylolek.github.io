@@ -1,25 +1,27 @@
 
 document.addEventListener("DOMContentLoaded", function(event){
 	var game = (function(containerId){
-		var gameWidth = 336;
-		var gameHeight = 372;
-		var actLevel = {};
-		var paused = true, isWBlur = false, restartLevel = false;
-		var canReact = false;
-		var maxLevels = 256;
-		var gameLevel = 1;
-		var levelStartTime;
-		var buildIndex = 0;
-		var gameImg;
-		var deltaT;
+		var gameWidth = 336,
+			gameHeight = 372,
+			actLevel = {},
+			paused = true,
+			isWBlur = false,
+			restartLevel = false,
+			canReact = false,
+			maxLevels = 256,
+			gameLevel = 1,
+			levelStartTime,
+			buildIndex = 0,
+			gameImg,
+			deltaT;
 
 		var render;
 
-		var player;
-		var playerCellType = '';
-		var playerAnim = '';
-		var playerDir = '';
-		var toDir = '';
+		var player,
+			playerCellType = '',
+			playerAnim = '',
+			playerDir = '',
+			toDir = '';
 
 		var theGhosts = [];
 		var showGhosts = false;
@@ -329,9 +331,9 @@ document.addEventListener("DOMContentLoaded", function(event){
 						//console.log('freeze hit')
 
 						canReact = false;
+						player.playAnim = false;
 						playProps.gEatPts = playProps.gEatPts == 0 ? 200 : 2 * playProps.gEatPts
 						playProps.score += playProps.gEatPts;
-						player.playAnim = false;
 						playerAnim = playProps.gEatPts.toString();
 						_updateScores();
 
@@ -342,7 +344,6 @@ document.addEventListener("DOMContentLoaded", function(event){
 
 						var PEGID = window.setTimeout(function(){
 							window.clearTimeout(PEGID);
-
 
 							canReact = true;
 							playerAnim = playerDir;
@@ -852,8 +853,8 @@ document.addEventListener("DOMContentLoaded", function(event){
 
 					//*display console* setup
 					renderer.print('1up', gameImg, 36, 0);
-					renderer.print('high score', gameImg, 108, 0);
-					renderer.print('2up', gameImg, 264, 0, [222, 222, 222, 55]);
+					renderer.print('high score', gameImg, 108, 0, [222, 222, 222, 100]);
+					renderer.print('2up', gameImg, 264, 0, [222, 222, 222, 100]);
 
 					//create player
 					player = new entity(actLevel.playerProps);
@@ -1001,7 +1002,8 @@ document.addEventListener("DOMContentLoaded", function(event){
 				playProps.showCollectable = restartLevel && playProps.showCollectable ? true : false;
 
 				playProps.doMoodSwitch = true;
-				playProps.secs = restartLevel ? playProps.secs : 0;
+				//playProps.secs = restartLevel ? playProps.secs : 0;
+				playProps.secs = 0;
 				playProps.reTrySec = 0;
 				playProps.maxDots = buildIndex == 0 ? 0 : layouts.getCellsByType(buildIndex, ['xxxpwc']).length,
 				playProps.ghostsMood = 'wander';
