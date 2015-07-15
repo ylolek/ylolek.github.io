@@ -927,6 +927,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 								renderer.clr(render.console.context, 0, 36, gameWidth, gameHeight);
 
 								paused = false;
+								isWBlur = false;
 								canReact = true;
 								toDir = Math.round(Math.random()) ? 'left' : 'right';
 
