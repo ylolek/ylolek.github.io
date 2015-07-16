@@ -257,25 +257,6 @@ document.addEventListener("DOMContentLoaded", function(event){
 					break;
 				}
 
-			//player position correction to mach cells position
-			if (player.needRepos){
-				var cell = renderer.ColRowToXY(playerCell.col, playerCell.row);
-				var corX = cell.x - actLevel.cellWidth / 2 - player.position.x;
-				var corY = cell.y - actLevel.cellHeight / 2 - player.position.y + 1;
-
-				/*player.position.x += corX / (player.props.speed * deltaT);
-				player.position.y += corY / (player.props.speed * deltaT);*/
-
-				var reposSpeed = playProps.dots > playProps.maxDots / 2 && gameLevel >= 4 ? player.props.speed / 1.4 : player.props.speed * 1.1;
-				player.position.x += corX / (reposSpeed * deltaT);
-				player.position.y += corY / (reposSpeed * deltaT);
-
-				if (Math.round(corX) == 0 && Math.round(corY) == 0){
-					player.needRepos = false;
-					return;
-				}
-			}
-
 			var isPathWay = false;
 			if (_isPathWay(toDir)){
 				needRepos = true;
@@ -303,6 +284,24 @@ document.addEventListener("DOMContentLoaded", function(event){
 			player.playAnim = isPathWay;
 			player.canMove = isPathWay;
 
+			//player position correction to mach cells position
+			if (player.needRepos){
+				player.playAnim = true;
+
+				var cell = renderer.ColRowToXY(playerCell.col, playerCell.row);
+				var corX = cell.x - actLevel.cellWidth / 2 - player.position.x;
+				var corY = cell.y - actLevel.cellHeight / 2 - player.position.y + 1;
+
+				var reposT = player.props.speed < 92 ? .028 : .024;
+				player.position.x += corX / (player.props.speed * reposT);
+				player.position.y += corY / (player.props.speed * reposT);
+
+				if (Math.round(corX) == 0 && Math.round(corY) == 0){
+					player.needRepos = false;
+					player.playAnim = isPathWay;
+					return;
+				}
+			}
 
 			//check hit with powerpills
 			powerpills.some(function(powerpill, index){
