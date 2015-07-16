@@ -83,91 +83,91 @@ entity.prototype = {
 		this.clip.y = clipY;
 	},
 
-		//goes to current animation *frame* and stops
-		gotoAndStop : function(frame){
-			if (isNaN(frame)){
-				return false;
-			}
-
-			this.playAnim = false;
-
-			if (this.actAnimProps.frame instanceof Array){
-				var clipX = this.actAnimProps.frame[frame - 1].x;
-				var clipY = this.actAnimProps.frame[frame - 1].y;
-			} else {
-				var clipX = this.actAnimProps.clipSX + Math.round(frame - 1) * (this.clip.width * this.actAnimProps.clipStep);
-				var clipY = this.actAnimProps.clipSY;
-			}
-
-			this.clip.x = clipX;
-			this.clip.y = clipY;
-		},
-
-		//call it in a lopp
-		animate : function(animStr, deltaT, anchor){
-			if (!animStr.length || (this.actAnimation.anchor && !anchor)){
-				return false;
-			}
-
-			var isAnchor = anchor ? anchor : false;
-			if (isAnchor || !this.actAnimation.anchor){
-				this.requestedAnim = animStr.toLowerCase();
-			} else{
-				this.requestedAnim = this.actAnimation.name;
-			}
-
-			//this.playAnim = true;
-			this.deltaT = deltaT;
-			this.actAnimation.anchor = isAnchor;
-
-			this.doAnim();
-		},
-
-		//call it in a loop
-		move : function(direction, deltaT, anchor){
-			if (!this.canMove || (this.actMove.anchor && !anchor)){
-				return false;
-			}
-
-			var isAnchor = anchor ? anchor : false;
-			if (isAnchor || !this.actMove.anchor){
-				var dir = direction;
-			} else{
-				var dir = this.actMove.direction;
-			}
-
-			this.actMove.direction = dir;
-			this.actMove.anchor = isAnchor;
-
-			//check if speed is frame rate dependent
-			if (this.props.speedFRD){
-				//speed calculation, assuming a maximum of 60 fps
-				var curFPS = 1 / deltaT;
-				var FPSPerc = Math.min(60, curFPS) / 60 * 100;
-				//min 5 pixels
-				var speed = Math.max(5, Math.min(this.props.speed, (this.props.speed * FPSPerc / 100)));
-			}else {
-				var speed = this.props.speed;
-			}
-
-			switch (dir.toLowerCase()){
-				case 'up' :
-				this.position.y -= speed * deltaT;
-				break;
-
-				case 'down' :
-				this.position.y += speed * deltaT;
-				break;
-
-				case 'left' :
-				this.position.x -= speed * deltaT;
-				break;
-
-				case 'right' :
-				this.position.x += speed * deltaT;
-				break;
-			}
-
-			return { x : this.position.x, y : this.position.y}
+	//goes to current animation *frame* and stops
+	gotoAndStop : function(frame){
+		if (isNaN(frame)){
+			return false;
 		}
+
+		this.playAnim = false;
+
+		if (this.actAnimProps.frame instanceof Array){
+			var clipX = this.actAnimProps.frame[frame - 1].x;
+			var clipY = this.actAnimProps.frame[frame - 1].y;
+		} else {
+			var clipX = this.actAnimProps.clipSX + Math.round(frame - 1) * (this.clip.width * this.actAnimProps.clipStep);
+			var clipY = this.actAnimProps.clipSY;
+		}
+
+		this.clip.x = clipX;
+		this.clip.y = clipY;
+	},
+
+	//call it in a lopp
+	animate : function(animStr, deltaT, anchor){
+		if (!animStr.length || (this.actAnimation.anchor && !anchor)){
+			return false;
+		}
+
+		var isAnchor = anchor ? anchor : false;
+		if (isAnchor || !this.actAnimation.anchor){
+			this.requestedAnim = animStr.toLowerCase();
+		} else{
+			this.requestedAnim = this.actAnimation.name;
+		}
+
+		//this.playAnim = true;
+		this.deltaT = deltaT;
+		this.actAnimation.anchor = isAnchor;
+
+		this.doAnim();
+	},
+
+	//call it in a loop
+	move : function(direction, deltaT, anchor){
+		if (!this.canMove || (this.actMove.anchor && !anchor)){
+			return false;
+		}
+
+		var isAnchor = anchor ? anchor : false;
+		if (isAnchor || !this.actMove.anchor){
+			var dir = direction;
+		} else{
+			var dir = this.actMove.direction;
+		}
+
+		this.actMove.direction = dir;
+		this.actMove.anchor = isAnchor;
+
+		//check if speed is frame rate dependent
+		if (this.props.speedFRD){
+			//speed calculation, assuming a maximum of 60 fps
+			var curFPS = 1 / deltaT;
+			var FPSPerc = Math.min(60, curFPS) / 60 * 100;
+			//min 5 pixels
+			var speed = Math.max(5, Math.min(this.props.speed, (this.props.speed * FPSPerc / 100)));
+		}else {
+			var speed = this.props.speed;
+		}
+
+		switch (dir.toLowerCase()){
+			case 'up' :
+			this.position.y -= speed * deltaT;
+			break;
+
+			case 'down' :
+			this.position.y += speed * deltaT;
+			break;
+
+			case 'left' :
+			this.position.x -= speed * deltaT;
+			break;
+
+			case 'right' :
+			this.position.x += speed * deltaT;
+			break;
+		}
+
+		return { x : this.position.x, y : this.position.y}
 	}
+}

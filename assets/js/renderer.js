@@ -223,7 +223,6 @@ var renderer = (function(){
 			});
 		},
 
-
 		print : function(msgStr, img, x, y, rgbaArr, ctx){
 			if (!msgStr.length){
 				return;

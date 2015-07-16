@@ -377,5 +377,4 @@ pathFinder.prototype = {
 			directionBy : howMsg || ''
 		};
 	}
-
 }
