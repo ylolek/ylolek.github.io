@@ -134,7 +134,7 @@ var ghosts = (function(){
 					ghost.entity.position.y += corY;
 
 				}else{
-					var reposT = actGhostsSpeed < 92 ? .02 : .014;
+					var reposT = actGhostsSpeed < 92 ? .028 : .018
 					ghost.entity.position.x += ghost.inCage || ghost.freezed ? corX / (ghost.entity.props.speed * .08 ) : corX / (ghost.entity.props.speed * reposT );
 					ghost.entity.position.y += ghost.inCage || ghost.freezed ? corY / (ghost.entity.props.speed * .08 ) : corY / (ghost.entity.props.speed * reposT );
 				}
