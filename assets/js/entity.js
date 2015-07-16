@@ -1,87 +1,87 @@
 
-	function entity(entityObj){
-		this.deltaT = 0;
-		this.actAnimProps = {};
-		this.requestedAnim = '';
-		this.actAnimation = {
-			name : '',
-			frame : 1,
-			anchor : false
-		}
-		this.actMove = {
-			direction : '',
-			anchor : false
-		}
-		this.playAnim = true;
-		this.canMove = true;
-		this.props = entityObj;
+function entity(entityObj){
+	this.deltaT = 0;
+	this.actAnimProps = {};
+	this.requestedAnim = '';
+	this.actAnimation = {
+		name : '',
+		frame : 1,
+		anchor : false
+	}
+	this.actMove = {
+		direction : '',
+		anchor : false
+	}
+	this.playAnim = true;
+	this.canMove = true;
+	this.props = entityObj;
 
-		this.position = {
-			x : entityObj.startPos.x,
-			y : entityObj.startPos.y
-		}
-
-		this.clip = {
-			x : entityObj.clip.startX,
-			y : entityObj.clip.startY,
-			width : entityObj.clip.width,
-			height : entityObj.clip.height
-		}
+	this.position = {
+		x : entityObj.startPos.x,
+		y : entityObj.startPos.y
 	}
 
-	entity.prototype = {
-		getAnimProps : function(){
-			if (this.props.animations instanceof Array == false) return false;
+	this.clip = {
+		x : entityObj.clip.startX,
+		y : entityObj.clip.startY,
+		width : entityObj.clip.width,
+		height : entityObj.clip.height
+	}
+}
 
-			var retObj = null;
-			this.props.animations.some(function(animation){
-				if (animation.name.toLowerCase() == this.actAnimation.name){
-					retObj = animation;
-				}
-			}, this);
+entity.prototype = {
+	getAnimProps : function(){
+		if (this.props.animations instanceof Array == false) return false;
+
+		var retObj = null;
+		this.props.animations.some(function(animation){
+			if (animation.name.toLowerCase() == this.actAnimation.name){
+				retObj = animation;
+			}
+		}, this);
 
 
-			return retObj;
-		},
+		return retObj;
+	},
 
-		doAnim : function(){
-			if (this.requestedAnim != this.actAnimation.name){
-				this.actAnimation.name = this.requestedAnim;
+	doAnim : function(){
+		if (this.requestedAnim != this.actAnimation.name){
+			this.actAnimation.name = this.requestedAnim;
+			this.actAnimation.frame = 1;
+			this.actAnimProps = this.getAnimProps();
+
+			this.clip.x = this.actAnimProps.clipSX;
+			this.clip.y = this.actAnimProps.clipSY;
+		}
+
+		if (this.actAnimProps == null || !this.playAnim){
+			return false;
+		}
+
+		if (Math.floor(this.actAnimation.frame) > this.actAnimProps.frames){
+			if (this.actAnimProps.loop){
 				this.actAnimation.frame = 1;
-				this.actAnimProps = this.getAnimProps();
-
-				this.clip.x = this.actAnimProps.clipSX;
-				this.clip.y = this.actAnimProps.clipSY;
-			}
-
-			if (this.actAnimProps == null || !this.playAnim){
-				return false;
-			}
-
-			if (Math.floor(this.actAnimation.frame) > this.actAnimProps.frames){
-				if (this.actAnimProps.loop){
-					this.actAnimation.frame = 1;
-					var _frame = 1;
-				}else{
-					this.actAnimation.frame = this.actAnimProps.frames;
-					var _frame = this.actAnimProps.frames;
-				}
+				var _frame = 1;
 			}else{
-				this.actAnimation.frame += this.actAnimProps.speed * this.deltaT;
-				var _frame = Math.min(this.actAnimProps.frames, Math.floor(this.actAnimation.frame));
+				this.actAnimation.frame = this.actAnimProps.frames;
+				var _frame = this.actAnimProps.frames;
 			}
+		}else{
+			this.actAnimation.frame += this.actAnimProps.speed * this.deltaT;
+			var _frame = Math.min(this.actAnimProps.frames, Math.floor(this.actAnimation.frame));
+		}
 
-			if (this.actAnimProps.frame instanceof Array && this.actAnimProps.frame[_frame - 1] != null){
-				var clipX = this.actAnimProps.frame[_frame - 1].x;
-				var clipY = this.actAnimProps.frame[_frame - 1].y;
-			}else{
-				var clipX = this.actAnimProps.clipSX + (_frame - 1) * (this.clip.width * this.actAnimProps.clipStep);
-				var clipY = this.actAnimProps.clipSY;
-			}
+		if (this.actAnimProps.frame instanceof Array && this.actAnimProps.frame[_frame - 1] != null){
+			var clipX = this.actAnimProps.frame[_frame - 1].x;
+			var clipY = this.actAnimProps.frame[_frame - 1].y;
+		}else{
+			var clipX = this.actAnimProps.clipSX + (_frame - 1) * (this.clip.width * this.actAnimProps.clipStep);
+			var clipY = this.actAnimProps.clipSY;
+		}
 
-			this.clip.x = clipX;
-			this.clip.y = clipY;
-		},
+		this.clip.x = clipX;
+		this.clip.y = clipY;
+	},
 
 		//goes to current animation *frame* and stops
 		gotoAndStop : function(frame){
@@ -152,20 +152,20 @@
 
 			switch (dir.toLowerCase()){
 				case 'up' :
-					this.position.y -= speed * deltaT;
-					break;
+				this.position.y -= speed * deltaT;
+				break;
 
 				case 'down' :
-					this.position.y += speed * deltaT;
-					break;
+				this.position.y += speed * deltaT;
+				break;
 
 				case 'left' :
-					this.position.x -= speed * deltaT;
-					break;
+				this.position.x -= speed * deltaT;
+				break;
 
 				case 'right' :
-					this.position.x += speed * deltaT;
-					break;
+				this.position.x += speed * deltaT;
+				break;
 			}
 
 			return { x : this.position.x, y : this.position.y}

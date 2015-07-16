@@ -2,26 +2,26 @@
 document.addEventListener("DOMContentLoaded", function(event){
 	var game = (function(containerId){
 		var gameWidth = 336,
-			gameHeight = 372,
-			actLevel = {},
-			paused = true,
-			isWBlur = false,
-			restartLevel = false,
-			canReact = false,
-			maxLevels = 256,
-			gameLevel = 1,
-			levelStartTime,
-			buildIndex = 0,
-			gameImg,
-			deltaT;
+		gameHeight = 372,
+		actLevel = {},
+		paused = true,
+		isWBlur = false,
+		restartLevel = false,
+		canReact = false,
+		maxLevels = 256,
+		gameLevel = 1,
+		levelStartTime,
+		buildIndex = 0,
+		gameImg,
+		deltaT;
 
 		var render;
 
 		var player,
-			playerCellType = '',
-			playerAnim = '',
-			playerDir = '',
-			toDir = '';
+		playerCellType = '',
+		playerAnim = '',
+		playerDir = '',
+		toDir = '';
 
 		var theGhosts = [];
 		var showGhosts = false;
@@ -97,17 +97,17 @@ document.addEventListener("DOMContentLoaded", function(event){
 			switch (e.keyCode){
 				case 32 : //space
 				case 13 : //enter
-					if (buildIndex == 0){
-						game.playLevel(1);
-					}
-					break;
+				if (buildIndex == 0){
+					game.playLevel(1);
+				}
+				break;
 
 				case 27 : //esc
-					if (buildIndex > 0){
-						paused = !paused;
-						if (paused){
-							paused = true;
-							toDir = '';
+				if (buildIndex > 0){
+					paused = !paused;
+					if (paused){
+						paused = true;
+						toDir = '';
 							//sounds.pause();
 							//sounds.pauseBg();
 						}else{
@@ -118,8 +118,8 @@ document.addEventListener("DOMContentLoaded", function(event){
 						}
 					}
 					break;
-			}
-		});
+				}
+			});
 
 		//keyboard control for the player
 		var _playerCtrl = function(){
@@ -133,30 +133,30 @@ document.addEventListener("DOMContentLoaded", function(event){
 					//up
 					case 38 : //up arrow
 					case 87 : //w
-						paused = false;
-						toDir = 'up';
-						break;
+					paused = false;
+					toDir = 'up';
+					break;
 
 					//down
 					case 40 : //down arrow
 					case 83 : //s
-						paused = false;
-						toDir = 'down';
-						break;
+					paused = false;
+					toDir = 'down';
+					break;
 
 					//left
 					case 37 : //left arrow
 					case 65 : //a
-						paused = false;
-						toDir = 'left';
-						break;
+					paused = false;
+					toDir = 'left';
+					break;
 
 					//left
 					case 39 : //right arrow
 					case 68 : //d
-						paused = false;
-						toDir = 'right';
-						break;
+					paused = false;
+					toDir = 'right';
+					break;
 				}
 			}, true);
 		}
@@ -171,32 +171,32 @@ document.addEventListener("DOMContentLoaded", function(event){
 
 			switch (direction.toLowerCase()){
 				case 'up' :
-					var rowIndex = Math.max(0, playerCell.row - 1);
-					var cellVal = layout[rowIndex][playerCell.col];
-					isPathWay = pways.indexOf(cellVal.toLowerCase()) == -1 ? false : true;
+				var rowIndex = Math.max(0, playerCell.row - 1);
+				var cellVal = layout[rowIndex][playerCell.col];
+				isPathWay = pways.indexOf(cellVal.toLowerCase()) == -1 ? false : true;
 
-					break;
+				break;
 
 				case 'down' :
-					var rowIndex = Math.min(layout.length - 1, playerCell.row + 1);
-					var cellVal = layout[rowIndex][playerCell.col];
-					isPathWay = pways.indexOf(cellVal.toLowerCase()) == -1 ? false : true;
+				var rowIndex = Math.min(layout.length - 1, playerCell.row + 1);
+				var cellVal = layout[rowIndex][playerCell.col];
+				isPathWay = pways.indexOf(cellVal.toLowerCase()) == -1 ? false : true;
 
-					break;
+				break;
 
 				case 'left' :
-					var colIndex = Math.max(0, playerCell.col - 1);
-					var cellVal = layout[playerCell.row][colIndex];
-					isPathWay = pways.indexOf(cellVal.toLowerCase()) == -1 ? false : true;
+				var colIndex = Math.max(0, playerCell.col - 1);
+				var cellVal = layout[playerCell.row][colIndex];
+				isPathWay = pways.indexOf(cellVal.toLowerCase()) == -1 ? false : true;
 
-					break;
+				break;
 
 				case 'right' :
-					var colIndex = Math.min(layout[playerCell.row].length - 1, playerCell.col + 1);
-					var cellVal = layout[playerCell.row][colIndex];
-					isPathWay = pways.indexOf(cellVal.toLowerCase()) == -1 ? false : true;
+				var colIndex = Math.min(layout[playerCell.row].length - 1, playerCell.col + 1);
+				var cellVal = layout[playerCell.row][colIndex];
+				isPathWay = pways.indexOf(cellVal.toLowerCase()) == -1 ? false : true;
 
-					break;
+				break;
 			}
 
 			return isPathWay;
@@ -256,7 +256,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 					}
 
 					break;
-			}
+				}
 
 			//player position correction to mach cells position
 			if (player.needRepos){
@@ -290,7 +290,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 			}else{
 				//uncomment toDir = ''; to exact match for pathways and cursor keys.
 				//toDir = '';
-				 if (_isPathWay(playerDir)){
+				if (_isPathWay(playerDir)){
 					isPathWay = true;
 				} else{
 					isPathWay = false;
@@ -595,10 +595,10 @@ document.addEventListener("DOMContentLoaded", function(event){
 				if ( (playerCell.col >= 9 && playerCell.col <= 12) || (playerCell.col >= 15 && playerCell.col <= 18) ) inShelter = true
 			}
 
-			return inShelter;
-		}
+		return inShelter;
+	}
 
-		var fpsUT = 1;
+	var fpsUT = 1;
 		//gameloop
 		var _play = function(DOMHighResTimeStamp){
 			var now = DOMHighResTimeStamp || performance.now() || Date.now();
@@ -960,7 +960,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 				function(errMsg, img){
 					//load error
 				});
-			}catch(err){
+}catch(err){
 				//console.log(err);
 			}
 		}
@@ -1029,5 +1029,5 @@ document.addEventListener("DOMContentLoaded", function(event){
 			//after sounds has loaded
 			game.playLevel(0);
 		//});
-	}, 0);
+}, 0);
 });

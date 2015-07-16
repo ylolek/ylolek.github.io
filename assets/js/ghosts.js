@@ -1,46 +1,46 @@
 
-	var ghosts = (function(){
-		var theGhosts = [],
-			playGround = {},
-			pathways = [],
-			lastSpeeds = [],
-			targetPos = {};
+var ghosts = (function(){
+	var theGhosts = [],
+	playGround = {},
+	pathways = [],
+	lastSpeeds = [],
+	targetPos = {};
 
-		var startTime,
-			gameWidth,
-			gameHeight,
-			cellWidth,
-			cellHeight,
-			actLevel,
-			dotsEaten;
+	var startTime,
+	gameWidth,
+	gameHeight,
+	cellWidth,
+	cellHeight,
+	actLevel,
+	dotsEaten;
 
-		var firstStep = true,
-			canUsePortals = false,
-			paused = false,
-			freezed = false;
+	var firstStep = true,
+	canUsePortals = false,
+	paused = false,
+	freezed = false;
 
-		var secs = 0,
-			freezeSec = 0,
-			freezeEndSec = 0,
-			freezeCtrlSec = 0,
-			freezeSpeed = inCageSpeed = 50,
-			eatenSpeed = 220,
-			actGhostsSpeed = 0,
-			ghostsFreezed = 0;
+	var secs = 0,
+	freezeSec = 0,
+	freezeEndSec = 0,
+	freezeCtrlSec = 0,
+	freezeSpeed = inCageSpeed = 50,
+	eatenSpeed = 220,
+	actGhostsSpeed = 0,
+	ghostsFreezed = 0;
 
-		var _getCells = function(valueArr){
-			var matchArr = [];
-			playGround.forEach(function(row, rowIndex){
-				row.forEach(function(cell, colIndex){
-					if (valueArr.indexOf(cell.toLowerCase()) != -1){
-						matchArr.push({
-							type : cell.toLowerCase(),
-							row : rowIndex,
-							col : colIndex
-						});
-					}
-				});
+	var _getCells = function(valueArr){
+		var matchArr = [];
+		playGround.forEach(function(row, rowIndex){
+			row.forEach(function(cell, colIndex){
+				if (valueArr.indexOf(cell.toLowerCase()) != -1){
+					matchArr.push({
+						type : cell.toLowerCase(),
+						row : rowIndex,
+						col : colIndex
+					});
+				}
 			});
+		});
 
 			//console.log(matchArr)
 			return matchArr;
@@ -288,13 +288,13 @@
 					if (ghost.needRepos) ghost.lastDirection = firstStepD;
 
 				//step
-				}else{
-					ghost.toNextStep = true;
+			}else{
+				ghost.toNextStep = true;
 
-					ghost.lastDirection = ghost.nextCells[ghost.actStep].direction.toLowerCase();
-					ghost.lookToStep = Math.min(ghost.nextCells.length - 1, ghost.actStep + 1);
+				ghost.lastDirection = ghost.nextCells[ghost.actStep].direction.toLowerCase();
+				ghost.lookToStep = Math.min(ghost.nextCells.length - 1, ghost.actStep + 1);
 
-					if (cellPos.col == ghost.nextCells[ghost.actStep].col && cellPos.row == ghost.nextCells[ghost.actStep].row){
+				if (cellPos.col == ghost.nextCells[ghost.actStep].col && cellPos.row == ghost.nextCells[ghost.actStep].row){
 						//check if reposition needed (on turns)
 						var nextDir = ghost.nextCells[ghost.lookToStep].direction.toLowerCase();
 						var actDir = ghost.nextCells[ghost.actStep].direction.toLowerCase();
@@ -335,45 +335,45 @@
 				}
 			});
 
-			firstStep = false;
-		}
+firstStep = false;
+}
 
 
 
-		return {
-			paused : paused,
+return {
+	paused : paused,
 
-			setAnimation : function(animStr, deltaT, ghostEntity, anchor){
-				_setAnimation(animStr, deltaT, ghostEntity, anchor);
-			},
+	setAnimation : function(animStr, deltaT, ghostEntity, anchor){
+		_setAnimation(animStr, deltaT, ghostEntity, anchor);
+	},
 
-			portalsClose : function(){
-				theGhosts.forEach(function(ghost){
+	portalsClose : function(){
+		theGhosts.forEach(function(ghost){
 					//cloes pathways to protal entrances
 					ghost.router.cells[14][6].directions.left = false; //left
 					ghost.router.cells[14][21].directions.right = false; //right
 				});
-			},
+	},
 
-			portalsOpen : function(){
-				theGhosts.forEach(function(ghost){
+	portalsOpen : function(){
+		theGhosts.forEach(function(ghost){
 					//cloes pathways to protal entrances
 					ghost.router.cells[14][6].directions.left = true; //left
 					ghost.router.cells[14][21].directions.right = true; //right
 				});
-			},
+	},
 
-			setSpeed : function(speed, ghostName){
-				var toSpeed = isNaN(speed) ? 1 : speed;
-				var name = typeof ghostName === 'string' ? ghostName.trim().toLowerCase() : null;
-				var theGhost = null;
+	setSpeed : function(speed, ghostName){
+		var toSpeed = isNaN(speed) ? 1 : speed;
+		var name = typeof ghostName === 'string' ? ghostName.trim().toLowerCase() : null;
+		var theGhost = null;
 
-				if (name != null){
-					theGhost = _getGhostByName(name);
-				}
+		if (name != null){
+			theGhost = _getGhostByName(name);
+		}
 
-				if (theGhost != null){
-					if (!theGhost.slowDown && !theGhost.freezed && !theGhost.eaten) theGhost.entity.props.speed = theGhost.inCage ? inCageSpeed : toSpeed;
+		if (theGhost != null){
+			if (!theGhost.slowDown && !theGhost.freezed && !theGhost.eaten) theGhost.entity.props.speed = theGhost.inCage ? inCageSpeed : toSpeed;
 				}else if (name == null){//set for all
 					theGhosts.forEach(function(ghost){
 						if (!ghost.slowDown && !ghost.freezed && !ghost.eaten) ghost.entity.props.speed = ghost.inCage ? inCageSpeed : toSpeed;
@@ -445,34 +445,34 @@
 								var r = (Math.round(Math.random() * 8)) + 26; //26 - 34
 								var c = -1 * (Math.round(Math.random() * 24)) + 12; //-12 - 12
 								break;
+							}
+
+							ghost.router.setRoute({ row : curPos.row, col : curPos.col}, { row : r, col : c}, stalker);
+
+							ghost.stepBuffLen = 20;
+							ghost.nextCells = [];
+							ghost.router.maxVisitedCells = 0;
 						}
+					})
+},
 
-						ghost.router.setRoute({ row : curPos.row, col : curPos.col}, { row : r, col : c}, stalker);
+hangOn : function(){
+	theGhosts.forEach(function(ghost){
+		ghost.entity.canMove = false;
+		ghost.entity.playAnim = false;
+	});
 
-						ghost.stepBuffLen = 20;
-						ghost.nextCells = [];
-						ghost.router.maxVisitedCells = 0;
-					}
-				})
-			},
+	paused = true;
+},
 
-			hangOn : function(){
-				theGhosts.forEach(function(ghost){
-					ghost.entity.canMove = false;
-					ghost.entity.playAnim = false;
-				});
+dontHangOn : function(){
+	theGhosts.forEach(function(ghost){
+		ghost.entity.canMove = true;
+		ghost.entity.playAnim = true;
+	});
 
-				paused = true;
-			},
-
-			dontHangOn : function(){
-				theGhosts.forEach(function(ghost){
-					ghost.entity.canMove = true;
-					ghost.entity.playAnim = true;
-				});
-
-				paused = false;
-			},
+	paused = false;
+},
 
 			//clears canvas around ghost(s)
 			erase : function(ghostName){
