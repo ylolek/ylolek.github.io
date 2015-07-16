@@ -16,7 +16,6 @@ document.addEventListener("DOMContentLoaded", function(event){
 		deltaT;
 
 		var render;
-
 		var player,
 		playerCellType = '',
 		playerAnim = '',
@@ -960,7 +959,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 				function(errMsg, img){
 					//load error
 				});
-}catch(err){
+		}catch(err){
 				//console.log(err);
 			}
 		}
