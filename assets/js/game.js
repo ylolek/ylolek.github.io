@@ -1028,5 +1028,5 @@ document.addEventListener("DOMContentLoaded", function(event){
 			//after sounds has loaded
 			game.playLevel(0);
 		//});
-}, 0);
+	}, 0);
 });
