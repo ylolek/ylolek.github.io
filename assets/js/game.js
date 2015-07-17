@@ -1,5 +1,6 @@
 
 document.addEventListener("DOMContentLoaded", function(event){
+
 	var game = (function(containerId){
 		var gameWidth = 336,
 		gameHeight = 372,
@@ -54,7 +55,8 @@ document.addEventListener("DOMContentLoaded", function(event){
 			ghostsMood : 'wander',
 			doMoodSwitch : true,
 			showCollectable : false,
-			extraLife : false
+			extraLife : false,
+			lastPlyrPos : { col : 0, row : 0}
 		}
 
 		var playerPos = {
@@ -531,7 +533,8 @@ document.addEventListener("DOMContentLoaded", function(event){
 				playerSpeed : 0,
 				ghostsMood : 'wander',
 				doMoodSwitch : true,
-				showCollectable : false
+				showCollectable : false,
+				lastPlyrPos : { col : 0, row : 0}
 			}
 
 			render = {};
@@ -731,17 +734,24 @@ document.addEventListener("DOMContentLoaded", function(event){
 					}
 
 					//extras
-					if (playProps.ghostsMood == 'stalker' && playProps.xReTrySec >= .3){
+					if (playProps.ghostsMood == 'stalker' && playProps.xReTrySec >= .3 && playerPos.col != playProps.lastPlyrPos.col){
 						var OIKEnt = _getGhostByName('oikake');
 						var OIKPos = renderer.XYToColRow(OIKEnt.position.x, OIKEnt.position.y);
 						var OIKPRDist = Math.abs(OIKPos.row - playerPos.row);
 						var OIKPCDist = Math.abs(OIKPos.col - playerPos.col);
 
 						if (OIKPRDist <= 2 && OIKPCDist <= 5){
-							//console.log('oikake closing in')
-							ghosts.setTarget(playerPos.col, playerPos.row, 'oikake', true, 1, maxVisCells);
+							if (OIKPos.row == playerPos.row){
+								var pCol = playerDir == 'left' ? playerPos.col - 2 : playerDir == 'right' ? playerPos.col + 2 : playerPos.col;
+							}else{
+								var pCol = playerPos.col;
+							}
+
+							ghosts.setTarget(pCol, playerPos.row, 'oikake', true, 1, maxVisCells);
 						}
 
+						playProps.lastPlyrPos.col = playerPos.col;
+						playProps.lastPlyrPos.row = playerPos.row;
 						playProps.xReTrySec = 0;
 					}
 
@@ -1010,6 +1020,8 @@ document.addEventListener("DOMContentLoaded", function(event){
 				playProps.levelSRatio = gameLevel > 5 ? 6 : 4;
 				playProps.ghostsSpeed = Math.min(100, 70 + gameLevel * playProps.levelSRatio);
 				//console.log('ghostsSpeed: ' + playProps.ghostsSpeed)
+
+				playProps.lastPlyrPos = { col : 0, row : 0};
 
 				_loadResources(buildIndex);
 
