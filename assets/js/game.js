@@ -138,11 +138,19 @@ document.addEventListener("DOMContentLoaded", function(event){
 				var sX = 0, sY = 0;
 
 				document.addEventListener('touchstart', function(event){
+					if (!canReact){
+						return false;
+					}
+
 					sX = event.touches[0].clientX;
 					sY = event.touches[0].clientY;
 				});
 
 				document.addEventListener('touchmove', function(event){
+					if (!canReact){
+						return false;
+					}
+
 					var xD = sX - event.touches[0].clientX;
 					var yD = sY - event.touches[0].clientY;
 
