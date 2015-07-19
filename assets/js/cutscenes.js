@@ -66,7 +66,8 @@ var cutscenes = (function(){
 			ctx.clearRect(104, 297, 25, 25);
 
 			if (sceneProps[0].printI == 0){
-				renderer.print('press space', gameImg, 8, 365, [4, 166, 121, 255]);
+				var msg = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0 ? 'tap to start' : 'press space';
+				renderer.print(msg, gameImg, 8, 365, [4, 166, 121, 255]);
 				sceneProps[0].printI++;
 			}
 

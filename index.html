@@ -9,10 +9,22 @@
 			*{
 				margin: 0;
 				padding: 0;
+
+				-webkit-box-sizing: border-box;
+				-moz-box-sizing: border-box;
+				-o-sizing: border-box;
+				-ms-box-sizing: border-box;
+				box-sizing: border-box;
+			}
+
+			html, body{
+				width : 100%;
+				height: 100%;
+				overflow: hidden;
 			}
 
 			body{
-				padding: 5% 0;
+				padding: 10px 0 0 0;
 				background: #000;
 
 				font: 12px sans, sans-serif;
@@ -37,7 +49,10 @@
 			}
 
 			.info{
+				position: fixed;
+				bottom: 0;
 				width: 336px;
+				max-width: 100%;
 				margin: 0 auto;
 			}
 		</style>
@@ -45,8 +60,7 @@
 	<body>
 		<div id="game"></div>
 		<div class="info">
-			<p><strong>w, s, a, d</strong> or <strong>arrow keys</strong> to navigate. <strong>esc</strong> to puase.</p>
-			<br/>
+			<p id="ctrlInfo"></p>
 			<p>Original spritemap from <a href="https://github.com/rm-hull/big-bang/blob/master/examples/pacman/data/spritemap-384.png" target="_blank">rm-hull</a>.</p>
 			<p>PAC-MAN&#8482; &amp; &copy;1980 NAMCO BANDAI Games Inc.</p>
 		</div>
@@ -63,6 +77,12 @@
 		<script src="assets/js/sounds.js"></script>
 		<script src="assets/js/cutscenes.js"></script>
 		<script src="assets/js/game.js"></script>
+
+		<script type="text/javascript">
+			document.addEventListener("DOMContentLoaded", function(event){
+				document.getElementById('ctrlInfo').innerHTML = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0 ? '<strong>swipe left, right, up, down</strong> to navigate.' : '<strong>w, s, a, d</strong> or <strong>arrow keys</strong> to navigate. <strong>esc</strong> to puase.';
+			});
+		</script>
 	</body>
 </html>
 

@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 		isWBlur = false,
 		restartLevel = false,
 		canReact = false,
+		isTouchDev = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0,
 		maxLevels = 256,
 		gameLevel = 1,
 		levelStartTime,
@@ -90,76 +91,117 @@ document.addEventListener("DOMContentLoaded", function(event){
 			}, 100);
 		})
 
-		window.addEventListener('keydown', function(e){
-			if (!canReact){
-				return false;
-			}
 
-			switch (e.keyCode){
-				case 32 : //space
-				case 13 : //enter
-				if (buildIndex == 0){
-					game.playLevel(1);
-				}
-				break;
-
-				case 27 : //esc
-				if (buildIndex > 0){
-					paused = !paused;
-					if (paused){
-						paused = true;
-						toDir = '';
-							//sounds.pause();
-							//sounds.pauseBg();
-						}else{
-							toDir = playerDir;
-							paused = false;
-							//sounds.resume();
-							//sounds.resumeBg();
-						}
-					}
-					break;
-				}
-			});
-
-		//keyboard control for the player
-		var _playerCtrl = function(){
-			//keys down
+		if (!isTouchDev){
 			document.addEventListener('keydown', function(e){
 				if (!canReact){
 					return false;
 				}
 
 				switch (e.keyCode){
-					//up
-					case 38 : //up arrow
-					case 87 : //w
-					paused = false;
-					toDir = 'up';
+					case 32 : //space
+					case 13 : //enter
+						if (buildIndex == 0){
+							game.playLevel(1);
+						}
 					break;
 
-					//down
-					case 40 : //down arrow
-					case 83 : //s
-					paused = false;
-					toDir = 'down';
-					break;
-
-					//left
-					case 37 : //left arrow
-					case 65 : //a
-					paused = false;
-					toDir = 'left';
-					break;
-
-					//left
-					case 39 : //right arrow
-					case 68 : //d
-					paused = false;
-					toDir = 'right';
+					case 27 : //esc
+						if (buildIndex > 0){
+							paused = !paused;
+							if (paused){
+								paused = true;
+								toDir = '';
+								//sounds.pause();
+								//sounds.pauseBg();
+							}else{
+								toDir = playerDir;
+								paused = false;
+								//sounds.resume();
+								//sounds.resumeBg();
+							}
+						}
 					break;
 				}
-			}, true);
+			});
+		} else{
+			document.addEventListener('touchend', function(){
+				if (buildIndex == 0){
+					game.playLevel(1);
+				}
+			});
+		}
+
+		//control for the player
+		var _playerCtrl = function(){
+			if (isTouchDev){
+				var sX = null, sY = null;
+
+				document.addEventListener('touchstart', function(event){
+					sX = event.touches[0].clientX;
+					sY = event.touches[0].clientY;
+				});
+
+				document.addEventListener('touchmove', function(event){
+					var xD = sX - event.touches[0].clientX;
+					var yD = sY - event.touches[0].clientY;
+
+					if (Math.abs(xD) > Math.abs(yD)) {//swipe left or right
+						if (xD > 0){//left
+							paused = false;
+							toDir = 'left';
+						}else {//right
+							paused = false;
+							toDir = 'right';
+						}
+					}else {//swipe up or down
+						if (yD > 0){//up
+							paused = false;
+							toDir = 'up';
+						}else {//down
+							paused = false;
+							toDir = 'down';
+						}
+					}
+				});
+
+			}else{
+				document.addEventListener('keydown', function(e){
+					if (!canReact){
+						return false;
+					}
+
+					switch (e.keyCode){
+						//up
+						case 38 : //up arrow
+						case 87 : //w
+						paused = false;
+						toDir = 'up';
+						break;
+
+						//down
+						case 40 : //down arrow
+						case 83 : //s
+						paused = false;
+						toDir = 'down';
+						break;
+
+						//left
+						case 37 : //left arrow
+						case 65 : //a
+						paused = false;
+						toDir = 'left';
+						break;
+
+						//left
+						case 39 : //right arrow
+						case 68 : //d
+						paused = false;
+						toDir = 'right';
+						break;
+					}
+				}, true);
+			}
 		}
 
 		//checks if there is pathway in the given direction
@@ -511,38 +553,16 @@ document.addEventListener("DOMContentLoaded", function(event){
 		}
 
 		var _gameOver = function(){
+			paused = true;
+
 			window.cancelAnimationFrame(aF);
 			window.clearInterval(aF);
 
-			playProps = {
-				lives : 10,
-				secs : 0,
-				reTrySec : 0,
-				xReTrySec : 0,
-				score : 0,
-				gEatPts : 0,
-				maxDots : 0,
-				dots : 0,
-				collectableIndex : 0,
-				ghostsStalkerT : 20,
-				levelSRatio : 0,
-				ghostsWanderT : 5,
-				collectableShowT : 10,
-				xCollShowSec : 0,
-				ghostsSpeed : 0,
-				playerSpeed : 0,
-				ghostsMood : 'wander',
-				doMoodSwitch : true,
-				showCollectable : false,
-				lastPlyrPos : { col : 0, row : 0}
-			}
-
-			render = {};
-			player = {};
-			actLevel = {};
-			theGhosts = [];
+			//sounds.resetSfx();
+			//sounds.resetBgSfx();
 
 			renderer.print('game over', gameImg, 114, 241, [222, 0, 0, 255]);
+
 			var GOID = window.setTimeout(function(){
 				window.clearTimeout(GOID);
 
@@ -645,7 +665,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 
 					/***********************************************/
 					//ghosts wander/stalker mood switch
-					var maxVisCells = 5;
+					var maxVisCells = 0;
 					if (playProps.doMoodSwitch) playProps.secs = isNaN(playProps.secs) ? deltaT : playProps.secs + deltaT;
 					if (playProps.secs >= playProps.ghostsWanderT && playProps.ghostsMood == 'wander'){//stalker on
 						playProps.ghostsMood = 'stalker';
@@ -653,33 +673,39 @@ document.addEventListener("DOMContentLoaded", function(event){
 
 						ghosts.portalsOpen();
 
-						var speedLRatio = gameLevel >= 5 ? 4 : 2;
-						ghosts.setSpeed(playProps.ghostsSpeed + speedLRatio);
+						//if (playerPos.col != playProps.lastPlyrPos.col && Math.abs(playerPos.row - playProps.lastPlyrPos.row) >= 1){
+							var speedLRatio = gameLevel >= 5 ? 4 : 2;
+							ghosts.setSpeed(playProps.ghostsSpeed + speedLRatio);
 
-						ghosts.setSpeed(playProps.ghostsSpeed + 4 + playProps.ghostsSpeed * 5 / 100, 'oikake');
+							ghosts.setSpeed(playProps.ghostsSpeed + 4 + playProps.ghostsSpeed * 5 / 100, 'oikake');
 
-						var MBCol = playerDir == 'left' ? playerPos.col - 4 : playerPos.col + 4;
-						var MBRow = playerDir == 'up' ? playerPos.row - 4 : playerPos.row + 4;
+							var MBCol = playerDir == 'left' ? playerPos.col - 4 : playerPos.col + 4;
+							var MBRow = playerDir == 'up' ? playerPos.row - 4 : playerPos.row + 4;
 
-						//red
-						ghosts.setTarget(playerPos.col, playerPos.row, 'oikake', true, 20, maxVisCells);
+							//red
+							ghosts.setTarget(playerPos.col, playerPos.row, 'oikake', true, 20, maxVisCells);
 
-						//cyam
-						var KGCol = playerDir == 'left' ? playerPos.col - 2 : playerPos.col + 2;
-						var KGRow = playerDir == 'up' ? playerPos.row - 2 : playerPos.row + 2;
-						ghosts.setTarget(KGCol , KGRow, 'kimagure', true, 20, maxVisCells);
+							//cyam
+							var KGCol = playerDir == 'left' ? playerPos.col - 2 : playerPos.col + 2;
+							var KGRow = playerDir == 'up' ? playerPos.row - 2 : playerPos.row + 2;
+							ghosts.setTarget(KGCol , KGRow, 'kimagure', true, 20, maxVisCells);
 
-						//pink
-						ghosts.setTarget(MBCol, MBRow, 'machibuse', true, 20, maxVisCells);
+							//pink
+							ghosts.setTarget(MBCol, MBRow, 'machibuse', true, 20, maxVisCells);
 
-						//orange
-						ghosts.setTarget(playerPos.col, playerPos.row, 'otoboke', true, 20, 0);
+							//orange
+							ghosts.setTarget(playerPos.col, playerPos.row, 'otoboke', true, 20, 0);
 
-						//sounds.play('stalker-on', true);
+							//sounds.play('stalker-on', true);
+						//}
+
+						playProps.lastPlyrPos.col = playerPos.col;
+						playProps.lastPlyrPos.row = playerPos.row;
 
 					}else if (playProps.secs >= playProps.ghostsStalkerT && playProps.ghostsMood == 'stalker'){//wander on
 						playProps.ghostsMood = 'wander';
 						playProps.secs = 0;
+						//maxVisCells = 0;
 
 						//ghost slow down
 						ghosts.setSpeed(playProps.ghostsSpeed);
@@ -698,43 +724,47 @@ document.addEventListener("DOMContentLoaded", function(event){
 						if (_playerInShelter() && playProps.ghostsMood != 'wander') {
 							//console.log('shelter');
 							playProps.ghostsMood = 'wander';
-						}
-
-						//ghost speed up
-						var speedLRatio = gameLevel >= 5 ? 4 : 2;
-						ghosts.setSpeed(playProps.ghostsSpeed + speedLRatio + playProps.ghostsSpeed * 5 / 100, 'oikake')
-
-						//red
-						ghosts.setTarget(playerPos.col, playerPos.row, 'oikake', true, 20, maxVisCells);
-
-						//cyan
-						var OIKEnt = _getGhostByName('oikake');
-						var OIKPos = renderer.XYToColRow(OIKEnt.position.x, OIKEnt.position.y);
-						var OIKPRDist = Math.abs(OIKPos.row - playerPos.row);
-						var OIKPCDist = Math.abs(OIKPos.col - playerPos.col);
-						if (OIKPCDist <= 5 && OIKPRDist <=5){
-							//var KGCol = playerDir == 'left' ? playerPos.col - OIKPCDist * 2 : playerPos.col + OIKPCDist * 2;
-							//var KGRow = playerDir == 'up' ? playerPos.row - OIKPRDist * 2 : playerPos.row + OIKPRDist * 2;
-
-							var KGCol = playerDir == 'left' ? playerPos.col - OIKPCDist  : playerPos.col + OIKPCDist * 2;
-							var KGRow = playerDir == 'up' ? playerPos.row - OIKPRDist  : playerPos.row + OIKPRDist * 2;
 						}else{
-							var KGCol = playerDir == 'left' ? playerPos.col - 2 : playerPos.col + 2;
-							var KGRow = playerDir == 'up' ? playerPos.row - 2 : playerPos.row + 2;
+
+							//ghost speed up
+							var speedLRatio = gameLevel >= 5 ? 4 : 2;
+							ghosts.setSpeed(playProps.ghostsSpeed + speedLRatio + playProps.ghostsSpeed * 5 / 100, 'oikake')
+
+							//red
+							ghosts.setTarget(playerPos.col, playerPos.row, 'oikake', true, 20, maxVisCells);
+
+							//cyan
+							var OIKEnt = _getGhostByName('oikake');
+							var OIKPos = renderer.XYToColRow(OIKEnt.position.x, OIKEnt.position.y);
+							var OIKPRDist = Math.abs(OIKPos.row - playerPos.row);
+							var OIKPCDist = Math.abs(OIKPos.col - playerPos.col);
+							if (OIKPCDist <= 5 && OIKPRDist <=5){
+								//var KGCol = playerDir == 'left' ? playerPos.col - OIKPCDist * 2 : playerPos.col + OIKPCDist * 2;
+								//var KGRow = playerDir == 'up' ? playerPos.row - OIKPRDist * 2 : playerPos.row + OIKPRDist * 2;
+
+								var KGCol = playerDir == 'left' ? playerPos.col - OIKPCDist  : playerPos.col + OIKPCDist * 2;
+								var KGRow = playerDir == 'up' ? playerPos.row - OIKPRDist  : playerPos.row + OIKPRDist * 2;
+							}else{
+								var KGCol = playerDir == 'left' ? playerPos.col - 2 : playerPos.col + 2;
+								var KGRow = playerDir == 'up' ? playerPos.row - 2 : playerPos.row + 2;
+							}
+							ghosts.setTarget(KGCol , KGRow, 'kimagure', true, 20, maxVisCells);
+
+							//pink
+							var MBCol = playerDir == 'left' ? playerPos.col - 4 : playerPos.col + 4;
+							var MBRow = playerDir == 'up' ? playerPos.row - 4 : playerPos.row + 4;
+							ghosts.setTarget(MBCol, MBRow, 'machibuse', true, 20, maxVisCells);
+
+							playProps.reTrySec = 0;
+							playProps.xReTrySec = 0;
 						}
-						ghosts.setTarget(KGCol , KGRow, 'kimagure', true, 20, maxVisCells);
 
-						//pink
-						var MBCol = playerDir == 'left' ? playerPos.col - 4 : playerPos.col + 4;
-						var MBRow = playerDir == 'up' ? playerPos.row - 4 : playerPos.row + 4;
-						ghosts.setTarget(MBCol, MBRow, 'machibuse', true, 20, maxVisCells);
-
-						playProps.reTrySec = 0;
-						playProps.xReTrySec = 0;
+						playProps.lastPlyrPos.col = playerPos.col;
+						playProps.lastPlyrPos.row = playerPos.row;
 					}
 
 					//extras
-					if (playProps.ghostsMood == 'stalker' && playProps.xReTrySec >= .3 && playerPos.col != playProps.lastPlyrPos.col){
+					if (playProps.ghostsMood == 'stalker' && playProps.xReTrySec >= .2 && playerPos.col != playProps.lastPlyrPos.col){
 						var OIKEnt = _getGhostByName('oikake');
 						var OIKPos = renderer.XYToColRow(OIKEnt.position.x, OIKEnt.position.y);
 						var OIKPRDist = Math.abs(OIKPos.row - playerPos.row);
@@ -746,6 +776,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 							}else{
 								var pCol = playerPos.col;
 							}
+
 
 							ghosts.setTarget(pCol, playerPos.row, 'oikake', true, 1, maxVisCells);
 						}
