@@ -135,7 +135,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 		//control for the player
 		var _playerCtrl = function(){
 			if (isTouchDev){
-				var sX = null, sY = null;
+				var sX = 0, sY = 0;
 
 				document.addEventListener('touchstart', function(event){
 					sX = event.touches[0].clientX;
