@@ -681,7 +681,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 
 						ghosts.portalsOpen();
 
-						//if (playerPos.col != playProps.lastPlyrPos.col && Math.abs(playerPos.row - playProps.lastPlyrPos.row) >= 1){
+						//if (playerPos.col != playProps.lastPlyrPos.col || playerPos.row != playProps.lastPlyrPos.row){
 							var speedLRatio = gameLevel >= 5 ? 4 : 2;
 							ghosts.setSpeed(playProps.ghostsSpeed + speedLRatio);
 
@@ -707,8 +707,8 @@ document.addEventListener("DOMContentLoaded", function(event){
 							//sounds.play('stalker-on', true);
 						//}
 
-						playProps.lastPlyrPos.col = playerPos.col;
-						playProps.lastPlyrPos.row = playerPos.row;
+						/*playProps.lastPlyrPos.col = playerPos.col;
+						playProps.lastPlyrPos.row = playerPos.row;*/
 
 					}else if (playProps.secs >= playProps.ghostsStalkerT && playProps.ghostsMood == 'stalker'){//wander on
 						playProps.ghostsMood = 'wander';
@@ -733,71 +733,67 @@ document.addEventListener("DOMContentLoaded", function(event){
 							//console.log('shelter');
 							playProps.ghostsMood = 'wander';
 						}else{
+							if (playerPos.col != playProps.lastPlyrPos.col || playerPos.row != playProps.lastPlyrPos.row){
+								//ghost speed up
+								var speedLRatio = gameLevel >= 5 ? 4 : 2;
+								ghosts.setSpeed(playProps.ghostsSpeed + speedLRatio + playProps.ghostsSpeed * 5 / 100, 'oikake')
 
-							//ghost speed up
-							var speedLRatio = gameLevel >= 5 ? 4 : 2;
-							ghosts.setSpeed(playProps.ghostsSpeed + speedLRatio + playProps.ghostsSpeed * 5 / 100, 'oikake')
+								//red
+								ghosts.setTarget(playerPos.col, playerPos.row, 'oikake', true, 20, maxVisCells);
 
-							//red
-							ghosts.setTarget(playerPos.col, playerPos.row, 'oikake', true, 20, maxVisCells);
+								//cyan
+								var OIKEnt = _getGhostByName('oikake');
+								var OIKPos = renderer.XYToColRow(OIKEnt.position.x, OIKEnt.position.y);
+								var OIKPRDist = Math.abs(OIKPos.row - playerPos.row);
+								var OIKPCDist = Math.abs(OIKPos.col - playerPos.col);
+								if (OIKPCDist <= 5 && OIKPRDist <=5){
+									var KGCol = playerDir == 'left' ? playerPos.col - OIKPCDist  : playerPos.col + OIKPCDist * 2;
+									var KGRow = playerDir == 'up' ? playerPos.row - OIKPRDist  : playerPos.row + OIKPRDist * 2;
+								}else{
+									var KGCol = playerDir == 'left' ? playerPos.col - 2 : playerPos.col + 2;
+									var KGRow = playerDir == 'up' ? playerPos.row - 2 : playerPos.row + 2;
+								}
+								ghosts.setTarget(KGCol , KGRow, 'kimagure', true, 20, maxVisCells);
 
-							//cyan
+								//pink
+								var MBCol = playerDir == 'left' ? playerPos.col - 4 : playerPos.col + 4;
+								var MBRow = playerDir == 'up' ? playerPos.row - 4 : playerPos.row + 4;
+								ghosts.setTarget(MBCol, MBRow, 'machibuse', true, 20, maxVisCells);
+
+								playProps.reTrySec = 0;
+								playProps.xReTrySec = 0;
+							}
+
+							playProps.lastPlyrPos.col = playerPos.col;
+							playProps.lastPlyrPos.row = playerPos.row;
+						}
+					}
+
+					//extras
+					if (playProps.ghostsMood == 'stalker' && playProps.xReTrySec >= .2){
+						if (playerPos.col != playProps.lastPlyrPos.col || playerPos.row != playProps.lastPlyrPos.row){
 							var OIKEnt = _getGhostByName('oikake');
 							var OIKPos = renderer.XYToColRow(OIKEnt.position.x, OIKEnt.position.y);
 							var OIKPRDist = Math.abs(OIKPos.row - playerPos.row);
 							var OIKPCDist = Math.abs(OIKPos.col - playerPos.col);
-							if (OIKPCDist <= 5 && OIKPRDist <=5){
-								//var KGCol = playerDir == 'left' ? playerPos.col - OIKPCDist * 2 : playerPos.col + OIKPCDist * 2;
-								//var KGRow = playerDir == 'up' ? playerPos.row - OIKPRDist * 2 : playerPos.row + OIKPRDist * 2;
 
-								var KGCol = playerDir == 'left' ? playerPos.col - OIKPCDist  : playerPos.col + OIKPCDist * 2;
-								var KGRow = playerDir == 'up' ? playerPos.row - OIKPRDist  : playerPos.row + OIKPRDist * 2;
-							}else{
-								var KGCol = playerDir == 'left' ? playerPos.col - 2 : playerPos.col + 2;
-								var KGRow = playerDir == 'up' ? playerPos.row - 2 : playerPos.row + 2;
+							if (OIKPRDist <= 2 && OIKPCDist <= 5){
+								if (OIKPos.row == playerPos.row){
+									var pCol = playerDir == 'left' ? playerPos.col - 2 : playerDir == 'right' ? playerPos.col + 2 : playerPos.col;
+								}else{
+									var pCol = playerPos.col;
+								}
+
+								ghosts.setTarget(pCol, playerPos.row, 'oikake', true, 1, maxVisCells);
 							}
-							ghosts.setTarget(KGCol , KGRow, 'kimagure', true, 20, maxVisCells);
-
-							//pink
-							var MBCol = playerDir == 'left' ? playerPos.col - 4 : playerPos.col + 4;
-							var MBRow = playerDir == 'up' ? playerPos.row - 4 : playerPos.row + 4;
-							ghosts.setTarget(MBCol, MBRow, 'machibuse', true, 20, maxVisCells);
-
-							playProps.reTrySec = 0;
-							playProps.xReTrySec = 0;
 						}
 
-						playProps.lastPlyrPos.col = playerPos.col;
-						playProps.lastPlyrPos.row = playerPos.row;
-					}
-
-					//extras
-					if (playProps.ghostsMood == 'stalker' && playProps.xReTrySec >= .2 && playerPos.col != playProps.lastPlyrPos.col){
-						var OIKEnt = _getGhostByName('oikake');
-						var OIKPos = renderer.XYToColRow(OIKEnt.position.x, OIKEnt.position.y);
-						var OIKPRDist = Math.abs(OIKPos.row - playerPos.row);
-						var OIKPCDist = Math.abs(OIKPos.col - playerPos.col);
-
-						if (OIKPRDist <= 2 && OIKPCDist <= 5){
-							if (OIKPos.row == playerPos.row){
-								var pCol = playerDir == 'left' ? playerPos.col - 2 : playerDir == 'right' ? playerPos.col + 2 : playerPos.col;
-							}else{
-								var pCol = playerPos.col;
-							}
-
-
-							ghosts.setTarget(pCol, playerPos.row, 'oikake', true, 1, maxVisCells);
-						}
-
-						playProps.lastPlyrPos.col = playerPos.col;
-						playProps.lastPlyrPos.row = playerPos.row;
 						playProps.xReTrySec = 0;
+						playProps.lastPlyrPos.col = playerPos.col;
+						playProps.lastPlyrPos.row = playerPos.row;
 					}
-
 				}
-
 				/***********************************************/
-
 
 				render.game.context.clearRect(0, 0, render.game.canvas.width, render.game.canvas.height);
 
