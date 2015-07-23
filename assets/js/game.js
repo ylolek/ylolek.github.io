@@ -682,7 +682,8 @@ document.addEventListener("DOMContentLoaded", function(event){
 						ghosts.portalsOpen();
 
 						//if (playerPos.col != playProps.lastPlyrPos.col || playerPos.row != playProps.lastPlyrPos.row){
-							var speedLRatio = gameLevel >= 5 ? 4 : 2;
+							//var speedLRatio = gameLevel >= 5 ? 4 : 2;
+							var speedLRatio = 2;
 							ghosts.setSpeed(playProps.ghostsSpeed + speedLRatio);
 
 							ghosts.setSpeed(playProps.ghostsSpeed + 4 + playProps.ghostsSpeed * 5 / 100, 'oikake');
@@ -735,7 +736,8 @@ document.addEventListener("DOMContentLoaded", function(event){
 						}else{
 							if (playerPos.col != playProps.lastPlyrPos.col || playerPos.row != playProps.lastPlyrPos.row){
 								//ghost speed up
-								var speedLRatio = gameLevel >= 5 ? 4 : 2;
+								//var speedLRatio = gameLevel >= 5 ? 4 : 2;
+								var speedLRatio = 2;
 								ghosts.setSpeed(playProps.ghostsSpeed + speedLRatio + playProps.ghostsSpeed * 5 / 100, 'oikake')
 
 								//red
@@ -1052,9 +1054,9 @@ document.addEventListener("DOMContentLoaded", function(event){
 				playProps.maxDots = buildIndex == 0 ? 0 : layouts.getCellsByType(buildIndex, ['xxxpwc']).length,
 				playProps.ghostsMood = 'wander';
 
-				playProps.levelSRatio = gameLevel > 5 ? 6 : 4;
+				playProps.levelSRatio = gameLevel > 5 ? 4 : 2;
 				playProps.ghostsSpeed = Math.min(100, 70 + gameLevel * playProps.levelSRatio);
-				//console.log('ghostsSpeed: ' + playProps.ghostsSpeed)
+				console.log('ghostsSpeed: ' + playProps.ghostsSpeed)
 
 				playProps.lastPlyrPos = { col : 0, row : 0};
 
