@@ -780,13 +780,14 @@ document.addEventListener("DOMContentLoaded", function(event){
 							var OIKPCDist = Math.abs(OIKPos.col - playerPos.col);
 
 							if (OIKPRDist <= 2 && OIKPCDist <= 5){
-								if (OIKPos.row == playerPos.row){
+								/*if (OIKPos.row == playerPos.row){
 									var pCol = playerDir == 'left' ? playerPos.col - 2 : playerDir == 'right' ? playerPos.col + 2 : playerPos.col;
 								}else{
 									var pCol = playerPos.col;
 								}
 
-								ghosts.setTarget(pCol, playerPos.row, 'oikake', true, 1, maxVisCells);
+								ghosts.setTarget(pCol, playerPos.row, 'oikake', true, 1, maxVisCells);*/
+								ghosts.setTarget(playerPos.col, playerPos.row, 'oikake', true, 1, maxVisCells);
 							}
 						}
 
