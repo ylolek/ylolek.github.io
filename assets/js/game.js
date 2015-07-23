@@ -38,6 +38,8 @@ document.addEventListener("DOMContentLoaded", function(event){
 
 		var playProps = {
 			lives : 4,
+			naxLives : 5,
+			lastLifePts : 0,
 			secs : 0,
 			reTrySec : 0,
 			xReTrySec : 0,
@@ -56,7 +58,6 @@ document.addEventListener("DOMContentLoaded", function(event){
 			ghostsMood : 'wander',
 			doMoodSwitch : true,
 			showCollectable : false,
-			extraLife : false,
 			lastPlyrPos : { col : 0, row : 0}
 		}
 
@@ -657,15 +658,15 @@ document.addEventListener("DOMContentLoaded", function(event){
 						powerpill.animate('blink', deltaT);
 					});
 
-
 					//move ghosts
 					ghosts.gogogo(deltaT, playProps.dots, playProps.ghostsSpeed);
 
-					//bonus life check
-					if (playProps.score >= 10000 && !playProps.extraLife){
+					//bonus life at every 10K pts.
+					if (playProps.score - 10000 >= playProps.lastLifePts && playProps.lives < playProps.naxLives){
 						playProps.lives++;
+						playProps.lastLifePts = playProps.score;
+
 						_showLives();
-						playProps.extraLife = true;
 
 						//sounds.play('extra-life', true);
 					}
@@ -729,7 +730,8 @@ document.addEventListener("DOMContentLoaded", function(event){
 					}
 
 					//stalker retry
-					if (playProps.ghostsMood == 'stalker' && playProps.reTrySec >= (gameLevel > 5 ? 1 : 2)){
+					//if (playProps.ghostsMood == 'stalker' && playProps.reTrySec >= (gameLevel > 5 ? 1 : 2)){
+					if (playProps.ghostsMood == 'stalker' && playProps.reTrySec >= 2){
 						if (_playerInShelter() && playProps.ghostsMood != 'wander') {
 							//console.log('shelter');
 							playProps.ghostsMood = 'wander';
@@ -797,6 +799,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 					}
 				}
 				/***********************************************/
+
 
 				render.game.context.clearRect(0, 0, render.game.canvas.width, render.game.canvas.height);
 
@@ -1057,7 +1060,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 
 				playProps.levelSRatio = gameLevel > 5 ? 4 : 2;
 				playProps.ghostsSpeed = Math.min(100, 70 + gameLevel * playProps.levelSRatio);
-				console.log('ghostsSpeed: ' + playProps.ghostsSpeed)
+				//console.log('ghostsSpeed: ' + playProps.ghostsSpeed)
 
 				playProps.lastPlyrPos = { col : 0, row : 0};
 
