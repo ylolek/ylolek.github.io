@@ -170,6 +170,7 @@ var ghosts = (function(){
 						ghost.router.setRoute(reposCell, ghost.router.destPos, ghost.router.stalker);
 
 						ghost.newRoute = true;
+						ghost.getNewRoute = true;
 						ghost.teleportDirection = '';
 						ghost.teleporting = false;
 						ghost.inTeleport = false;
@@ -191,6 +192,7 @@ var ghosts = (function(){
 				ghost.slowDown = false;
 				ghost.inCage = typeof ghost.inCage != 'boolean' ? false : ghost.inCage;
 				ghost.newRoute = false;
+				ghost.getNewRoute = false;
 				ghost.teleporting = false;
 				ghost.inTeleport = false;
 				ghost.freezed = false;
@@ -255,9 +257,9 @@ var ghosts = (function(){
 
 			//rebuffer steps
 			var buffEnd = ghost.nextCells.length - 2 < 0 ? ghost.nextCells.length : ghost.nextCells.length - 2;
-			if (!ghost.nextCells.length || ghost.actStep == buffEnd || ghost.newRoute){
+			if (!ghost.nextCells.length || ghost.actStep == buffEnd || ghost.getNewRoute){
 				var newSteps = ghost.router.getNextSteps(ghost.stepBuffLen, false);
-				if (ghost.newRoute){
+				if (ghost.getNewRoute){
 					ghost.nextCells = newSteps;
 				}else {
 					ghost.nextCells.splice(0, ghost.actStep);
@@ -275,6 +277,7 @@ var ghosts = (function(){
 
 				ghost.toNextStep = false;
 				ghost.newRoute = false;
+				ghost.getNewRoute = false;
 				ghost.actStep = 0;
 
 				//check if repos needed after new route
@@ -305,6 +308,7 @@ var ghosts = (function(){
 					}
 
 					ghost.toNextStep = false;
+					ghost.getNewRoute = ghost.newRoute;
 
 					//next step
 					ghost.actStep++;
@@ -394,17 +398,16 @@ var ghosts = (function(){
 			if (theGhost != null){
 				if (theGhost.needRepos || theGhost.teleporting || theGhost.inTeleport || theGhost.freezed || theGhost.eaten || theGhost.inCage) return;
 				theGhost.stepBuffLen = isNaN(buffSteps) ? 20 : buffSteps;
-				var ghostCell = renderer.XYToColRow(theGhost.entity.position.x + theGhost.entity.clip.width / 2, theGhost.entity.position.y + theGhost.entity.clip.height / 2);
-				theGhost.router.setRoute(ghostCell, {col : col, row : row}, isStalker);
 				theGhost.router.maxVisitedCells = isNaN(maxVisitedCells) ? 0 : maxVisitedCells;
-
-				theGhost.newRoute = true;
+				theGhost.router.destPos.row = row;
+				theGhost.router.destPos.col = col;
 			} else if (name == null){//move all
 				theGhosts.forEach(function(ghost){
 					if (!ghost.needRepos && !ghost.teleporting && !ghost.inTeleport && !ghost.freezed && !ghost.eaten && !ghost.inCage){
 						ghost.stepBuffLen = isNaN(buffSteps) ? 20 : buffSteps;
-						var ghostCell = renderer.XYToColRow(ghost.entity.position.x + ghost.entity.clip.width / 2, ghost.entity.position.y + ghost.entity.clip.height / 2);
 						ghost.router.maxVisitedCells = isNaN(maxVisitedCells) ? 0 : maxVisitedCells;
+						ghost.router.destPos.row = row;
+						ghost.router.destPos.col = col;
 					}
 				});
 			} else {
@@ -417,10 +420,6 @@ var ghosts = (function(){
 				if (!ghost.eaten && !ghost.freezed){
 					//set first route
 					var curPos = renderer.XYToColRow(ghost.entity.position.x + ghost.entity.clip.width / 2, ghost.entity.position.y + ghost.entity.clip.height / 2);
-
-					/*var rndIndex = Math.round(Math.random() * (pathways.length - 1));
-					var c = pathways[rndIndex].col;
-					var r = pathways[rndIndex].row;*/
 
 					switch (ghost.name.toLowerCase()){
 						case 'oikake' : //red
@@ -445,10 +444,10 @@ var ghosts = (function(){
 					}
 
 					ghost.router.setRoute({ row : curPos.row, col : curPos.col}, { row : r, col : c}, stalker);
-
 					ghost.stepBuffLen = 20;
 					ghost.nextCells = [];
 					ghost.router.maxVisitedCells = 0;
+					ghost.newRoute = true;
 				}
 			})
 		},
@@ -533,6 +532,9 @@ var ghosts = (function(){
 			_openCage(true, theGhost.name);
 
 			var ghostCellPos = renderer.XYToColRow(theGhost.entity.position.x + theGhost.entity.clip.width / 2, theGhost.entity.position.y + theGhost.entity.clip.height / 2);
+			//var actStep = Math.min(theGhost.actStep, theGhost.nextCells.length - 1);
+			//var ghostCellPos = { row : theGhost.nextCells[actStep].row, col : theGhost.nextCells[actStep].col };
+
 			startCell = {col: 14, row: 12};
 			theGhost.router.setRoute(ghostCellPos, startCell, true);
 			theGhost.stepBuffLen = 20;
@@ -673,6 +675,8 @@ var ghosts = (function(){
 
 			var ghostEntities = [];
 
+			//ghostArr.length = 1;
+
 			ghostArr.forEach(function(ghost, index){
 				theGhosts.push(ghost)
 
@@ -681,6 +685,8 @@ var ghosts = (function(){
 
 				ghost.stepBuffLen = 20;
 				ghost.actStep = 0;
+				ghost.newRoute = false;
+				ghost.getNewRoute = false;
 				ghost.inTeleport = false;
 				ghost.teleporting = false;
 				ghost.freezed = false;
@@ -690,6 +696,7 @@ var ghosts = (function(){
 				ghost.toNextStep = false;
 				ghost.dirPreStr = '';
 				ghost.teleportDirection = '';
+				ghost.nextCells = [];
 
 				if (ghost.name.toLowerCase() != 'oikake' && ghost.name.toLowerCase() != 'machibuse'){
 					ghost.inCage = true;

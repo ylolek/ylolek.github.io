@@ -130,11 +130,12 @@ pathFinder.prototype = {
 			return false;
 		}
 
-		var cell = this.cells[cellPos.row][cellPos.col];
-
-		if (stopWhenReached && (this.allCrawled() || (cellPos.row == this.destPos.row && cellPos.col == this.destPos.col))){
-			return null;
+		var _rndDirection = function(dirArr){
+			var rndIndex = Math.round(Math.random() * (dirArr.length - 1));
+			return dirArr[rndIndex];
 		}
+
+		var cell = this.cells[cellPos.row][cellPos.col];
 
 		//set current cell as visited
 		this.cells[cellPos.row][cellPos.col].visited = true;
@@ -148,23 +149,29 @@ pathFinder.prototype = {
 			}
 		});
 
-		var _updateVistedCells = function(scope){
-			//update visited cells length
-			if (scope.maxVisitedCells > 0 && scope.crawledCells.length >= scope.maxVisitedCells){
-				for (var i=scope.crawledCells.length - 1 - scope.maxVisitedCells; i>=0; i--){
-					scope.cells[scope.crawledCells[i].row][scope.crawledCells[i].col].visited = false;
-				}
-			}
-		}
+		//destination reached, or not but the whole maze was crawled
+		if (this.allCrawled() || (cellPos.row == this.destPos.row && cellPos.col == this.destPos.col)){
+			if (stopWhenReached){
+				return null;
+			}else{
+				//destPos reached. go whereevr
 
-		var _rndDirection = function(dirArr){
-			var rndIndex = Math.round(Math.random() * (dirArr.length - 1));
-			return dirArr[rndIndex];
+				/*var toCell = {
+					row :  Math.round(Math.random() * this.cells.length - 1),
+					col : Math.round(Math.random() * this.cells[0].length - 1)
+				}
+
+				this.setRoute({
+					row : this.crawlPos.row,
+					col : this.crawlPos.col
+				}, toCell);*/
+			}
 		}
 
 		var _stepBack = function(scope){
 			//step back
 			if (scope.crawledCells.length > 1){
+
 				//pop last step form crawled cells
 				scope.crawledCells.pop();
 
@@ -176,8 +183,8 @@ pathFinder.prototype = {
 				scope.crawlPos.row = scope.crawledCells[scope.crawledCells.length - 1].row;
 				scope.crawlPos.col = scope.crawledCells[scope.crawledCells.length - 1].col;
 
-				//update visited cells length
-				_updateVistedCells(scope);
+				//update visited cells
+				//scope.updateCellVisState();
 
 				//return what we just did
 				return {
@@ -201,50 +208,62 @@ pathFinder.prototype = {
 			}
 		}
 
-
-		_updateVistedCells(this);
-
 		if (this.stalker){
 			//try step to destPos direction
-			var canGoDir = []
+			var canGoDir = [];
 
 			//check destPos direction
+			//try to step to closer direction, or two futher one
 			var destDirection = this.cellDirection(this.destPos, cell);
 
-			destDirection.directions.forEach(function(destDir){
-				if (availDirs.indexOf(destDir) != -1 && !this.isCellVisited(destDir).visited){
-					canGoDir.push(destDir)
-				}
-			}, this);
+			/*var destStepDir = typeof destDirection.further === 'undefined' ? destDirection.closer : destDirection.further;
 
-			if (canGoDir.length > 0){
-				//step closer
-				var toCell = this.isCellVisited(_rndDirection(canGoDir));
-
+			//can step closer
+			if (availDirs.indexOf(destStepDir) != -1 && !this.isCellVisited(destStepDir).visited){
+				var toCell = this.isCellVisited(destStepDir);
 				this.lastDirection = toCell.direction;
-				return this.stepToCell(toCell, 'next step - getting closer');
-			}else{
-				//cant step closer, choose a random direction
-				var rndAvailDir = [];
-
-				//no way to current direction, choose one randomly
-				availDirs.forEach(function(availDir){
-					if (!this.isCellVisited(availDir).visited){
-						rndAvailDir.push(availDir);
+				return this.stepToCell(toCell, 'next step - getting closer futher || closer: ' + toCell.direction);
+			}else{*/
+				//try getting closer to a random direction to destPos
+				//console.log(destDirection)
+				destDirection.directions.forEach(function(destDir){
+					if (availDirs.indexOf(destDir) != -1 && !this.isCellVisited(destDir).visited){
+						canGoDir.push(destDir)
 					}
 				}, this);
 
-				if (rndAvailDir.length > 0){
-					//step on a not visited cell
-					var toCell = this.isCellVisited(_rndDirection(rndAvailDir));
+				if (canGoDir.length > 0){
+					//step closer
+
+					//if we can go to both directions, step to closer one
+					//var toCell = canGoDir.length == 2 ? this.isCellVisited(destDirection.closer) : this.isCellVisited(canGoDir[0]);
+
+					//get a random direction to destPos
+					var toCell = this.isCellVisited(_rndDirection(canGoDir));
 					this.lastDirection = toCell.direction;
-					return this.stepToCell(toCell, 'next step - random not visited');
-				} else{
-					//cant step on unvisted cell
-					//step back
-					return _stepBack(this);
+					return this.stepToCell(toCell, 'next step - getting closer rndom to avail dirs: ' + toCell.direction);
+				}else{
+					//cant step closer, step to a random direction from avails.
+					var rndAvailDir = [];
+					availDirs.forEach(function(availDir){
+						if (!this.isCellVisited(availDir).visited){
+							rndAvailDir.push(availDir);
+						}
+					}, this);
+
+					if (rndAvailDir.length > 0){
+						//step on a not visited cell
+						var toCell = this.isCellVisited(_rndDirection(rndAvailDir));
+						this.lastDirection = toCell.direction;
+						return this.stepToCell(toCell, 'next step - random not visited: ' + toCell.direction);
+					} else{
+						//cant step on unvisted cell
+						//step back
+						return _stepBack(this);
+					}
 				}
-			}
+			//}
+
 		}else{//not stalker mode
 			//choose a random direction
 			var rndAvailDir = [];
@@ -267,13 +286,31 @@ pathFinder.prototype = {
 		}
 	},
 
-	//check if cell to directionStr is visited
+	//checks if cell to directionStr is pathway
+	isPathway : function(directionStr){
+		switch (directionStr){
+			case 'up' :
+				return this.pathways.indexOf(this.cells[Math.max(0, this.crawlPos.row - 1)][this.crawlPos.col].type.toLowerCase()) != -1 ? true : false;
+				break;
+			case 'down' :
+				return this.pathways.indexOf(this.cells[Math.min(this.cells.length - 1, this.crawlPos.row + 1)][this.crawlPos.col].type.toLowerCase()) != -1 ? true : false;
+				break;
+			case 'left' :
+				return this.pathways.indexOf(this.cells[this.crawlPos.row][Math.max(0, this.crawlPos.col - 1)].type.toLowerCase()) != -1 ? true : false;
+				break;
+			case 'right' :
+				return this.pathways.indexOf(this.cells[this.crawlPos.row][Math.min(this.cells[0].length - 1, this.crawlPos.col + 1)].type.toLowerCase()) != -1 ? true : false;
+				break;
+		}
+	},
+
+	//checks if cell to directionStr is visited
 	//return visited state + cell indexes, and direction
 	isCellVisited : function(directionStr){
 		switch (directionStr){
 			case 'up' :
 				return {
-					visited : this.cells[this.crawlPos.row - 1][this.crawlPos.col].visited,
+					visited : this.cells[Math.max(0, this.crawlPos.row - 1)][this.crawlPos.col].visited,
 					row : this.crawlPos.row - 1,
 					col : this.crawlPos.col,
 					direction : 'up'
@@ -281,7 +318,7 @@ pathFinder.prototype = {
 				break;
 			case 'down' :
 				return {
-					visited : this.cells[this.crawlPos.row + 1][this.crawlPos.col].visited,
+					visited : this.cells[Math.min(this.cells.length - 1, this.crawlPos.row + 1)][this.crawlPos.col].visited,
 					row : this.crawlPos.row + 1,
 					col : this.crawlPos.col,
 					direction : 'down'
@@ -289,7 +326,7 @@ pathFinder.prototype = {
 				break;
 			case 'left' :
 				return {
-					visited : this.cells[this.crawlPos.row][this.crawlPos.col - 1].visited,
+					visited : this.cells[this.crawlPos.row][Math.max(0, this.crawlPos.col - 1)].visited,
 					row : this.crawlPos.row,
 					col : this.crawlPos.col - 1,
 					direction : 'left'
@@ -297,7 +334,7 @@ pathFinder.prototype = {
 				break;
 			case 'right' :
 				return {
-					visited : this.cells[this.crawlPos.row][this.crawlPos.col + 1].visited,
+					visited : this.cells[this.crawlPos.row][Math.min(this.cells[0].length - 1, this.crawlPos.col + 1)].visited,
 					row : this.crawlPos.row,
 					col : this.crawlPos.col + 1,
 					direction : 'right'
@@ -332,7 +369,7 @@ pathFinder.prototype = {
 	*/
 	cellDirection : function(cell, compCell){
 		var dirs = [];
-		var closerDir = '';
+		var closerDir = '', furtherDir = '';
 		var rowDif = cell.row - compCell.row;
 		var colDif = cell.col - compCell.col;
 
@@ -351,13 +388,17 @@ pathFinder.prototype = {
 		if (dirs.length == 0){
 			dirs[0] = '';
 			closerDir = '';
+			furtherDir = '';
 		}else{
 			closerDir = rowDif < colDif ? dirs[0] : dirs[1];
+			furtherDir = rowDif < colDif ? dirs[1] : dirs[0];
 		}
 
+		//console.log('closer: ' + closerDir + ' | further: ' + furtherDir);
 		return {
 			directions : dirs,
-			closer : closerDir
+			closer : closerDir,
+			further : furtherDir
 		};
 	},
 
@@ -369,6 +410,11 @@ pathFinder.prototype = {
 		//push to crawled cells
 		this.crawledCells.push(this.cells[cell.row][cell.col]);
 
+		//update visited cells
+		this.updateCellVisState();
+
+		//console.log('step to cell: col: ' + cell.col + ', row: ' + cell.row + ' | direction: ' + cell.direction + ' | dirBy: ' + howMsg);
+
 		//return what we just did
 		return {
 			row : cell.row,
@@ -376,5 +422,18 @@ pathFinder.prototype = {
 			direction : cell.direction || '',
 			directionBy : howMsg || ''
 		};
+	},
+
+	updateCellVisState : function(){
+		if (this.maxVisitedCells > 0 && this.crawledCells.length - 1 >= this.maxVisitedCells){
+			this.setAllUnVisited();
+
+			for (var i=this.crawledCells.length - 1 - this.maxVisitedCells; i<this.crawledCells.length; i++){
+				this.cells[this.crawledCells[i].row][this.crawledCells[i].col].visited = true;
+			}
+
+			//console.log(this.crawledCells)
+			//console.log(this.cells)
+		}
 	}
 }

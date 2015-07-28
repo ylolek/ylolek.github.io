@@ -1,5 +1,5 @@
 
-document.addEventListener("DOMContentLoaded", function(event){
+document.addEventListener('DOMContentLoaded', function(event){
 
 	var game = (function(containerId){
 		var gameWidth = 336,
@@ -674,128 +674,216 @@ document.addEventListener("DOMContentLoaded", function(event){
 
 					/***********************************************/
 					//ghosts wander/stalker mood switch
-					var maxVisCells = 0;
-					if (playProps.doMoodSwitch) playProps.secs = isNaN(playProps.secs) ? deltaT : playProps.secs + deltaT;
+					var maxVisCells = 2, stepBuffLen = 8;
+					if (playProps.doMoodSwitch){
+						playProps.secs = isNaN(playProps.secs) ? deltaT : playProps.secs + deltaT;
+						playProps.reTrySec += deltaT;
+						playProps.xReTrySec += deltaT;
+					}
+
 					if (playProps.secs >= playProps.ghostsWanderT && playProps.ghostsMood == 'wander'){//stalker on
 						playProps.ghostsMood = 'stalker';
 						playProps.secs = 0;
 
 						ghosts.portalsOpen();
 
-						//if (playerPos.col != playProps.lastPlyrPos.col || playerPos.row != playProps.lastPlyrPos.row){
-							//var speedLRatio = gameLevel >= 5 ? 4 : 2;
-							var speedLRatio = 2;
-							ghosts.setSpeed(playProps.ghostsSpeed + speedLRatio);
+						//var speedLRatio = gameLevel >= 5 ? 4 : 2;
+						var speedLRatio = 2;
+						ghosts.setSpeed(playProps.ghostsSpeed + speedLRatio);
 
-							ghosts.setSpeed(playProps.ghostsSpeed + 4 + playProps.ghostsSpeed * 5 / 100, 'oikake');
+						ghosts.setSpeed(playProps.ghostsSpeed + 4 + playProps.ghostsSpeed * 5 / 100, 'oikake');
 
-							var MBCol = playerDir == 'left' ? playerPos.col - 4 : playerPos.col + 4;
-							var MBRow = playerDir == 'up' ? playerPos.row - 4 : playerPos.row + 4;
+						var MBCol = playerDir == 'left' ? playerPos.col - 4 : playerPos.col + 4;
+						var MBRow = playerDir == 'up' ? playerPos.row - 4 : playerPos.row + 4;
 
-							//red
-							ghosts.setTarget(playerPos.col, playerPos.row, 'oikake', true, 20, maxVisCells);
+						//red
+						ghosts.setTarget(playerPos.col, playerPos.row, 'oikake', true, stepBuffLen, maxVisCells);
 
-							//cyam
-							var KGCol = playerDir == 'left' ? playerPos.col - 2 : playerPos.col + 2;
-							var KGRow = playerDir == 'up' ? playerPos.row - 2 : playerPos.row + 2;
-							ghosts.setTarget(KGCol , KGRow, 'kimagure', true, 20, maxVisCells);
+						//cyam
+						var KGCol = playerDir == 'left' ? playerPos.col - 2 : playerPos.col + 2;
+						var KGRow = playerDir == 'up' ? playerPos.row - 2 : playerPos.row + 2;
+						ghosts.setTarget(KGCol , KGRow, 'kimagure', true, stepBuffLen, maxVisCells);
 
-							//pink
-							ghosts.setTarget(MBCol, MBRow, 'machibuse', true, 20, maxVisCells);
+						//pink
+						ghosts.setTarget(MBCol, MBRow, 'machibuse', true, stepBuffLen, maxVisCells);
 
-							//orange
-							ghosts.setTarget(playerPos.col, playerPos.row, 'otoboke', true, 20, 0);
+						//orange
+						ghosts.setTarget(playerPos.col, playerPos.row, 'otoboke', true, stepBuffLen, maxVisCells);
 
-							//sounds.play('stalker-on', true);
-						//}
+						playProps.reTrySec = 0;
+						playProps.xReTrySec = 0;
 
-						/*playProps.lastPlyrPos.col = playerPos.col;
-						playProps.lastPlyrPos.row = playerPos.row;*/
+						playProps.lastPlyrPos.col = 0;
+						playProps.lastPlyrPos.row = 0;
+
+						//sounds.play('stalker-on', true);
+
+						//console.log('stalker mode on.');
 
 					}else if (playProps.secs >= playProps.ghostsStalkerT && playProps.ghostsMood == 'stalker'){//wander on
 						playProps.ghostsMood = 'wander';
 						playProps.secs = 0;
-						//maxVisCells = 0;
+						//maxVisCells = 28;
 
 						//ghost slow down
 						ghosts.setSpeed(playProps.ghostsSpeed);
 
 						ghosts.portalsClose();
 						ghosts.spreadOut();
+
+						playProps.lastPlyrPos.col = 0;
+						playProps.lastPlyrPos.row = 0;
+
+						//console.log('wander mode on.')
 					}
 
-					if (playProps.doMoodSwitch){
-						playProps.reTrySec += deltaT;
-						playProps.xReTrySec += deltaT;
-					}
+					//stalker ghosts can see pm?
+					/*if (playProps.ghostsMood == 'stalker'){
+						theGhosts.some(function(ghost){
+							var ghostCell = renderer.XYToColRow(ghost.position.x + ghost.clip.width / 2, ghost.position.y + ghost.clip.height / 2);
+
+							if ((ghostCell.row == playerPos.row || ghostCell.col == playerPos.col) && (playerPos.col != playProps.lastPlyrPos.col || playerPos.row != playProps.lastPlyrPos.row)){
+								//check if there is pathway to player
+								var rowD = ghostCell.row - playerPos.row;
+								var colD = ghostCell.col - playerPos.col;
+
+								var isPWRow = true, isPWCol = true;
+								if (ghostCell.col == playerPos.col){
+									//check row
+									isPWCol = false;
+									if (rowD < 0){
+										var fromRow = ghostCell.row;
+										var toRow = playerPos.row;
+									}else{
+										var fromRow = playerPos.row;
+										var toRow = ghostCell.row;
+									}
+
+									//console.log('fromRow: ' + fromRow + ' | toRow: ' + toRow);
+									for (var i=fromRow; i<=toRow; i++){
+										if (['xxxpwe', 'xxxpwc', 'xxxpwp', 'xx1hts', 'xx2hts', 'xx3hts', 'xx5hts', 'xx7hts', 'xxxxhe', 'xxxxte'].indexOf(actLevel.layout[i][ghostCell.col].toLowerCase()) == -1){
+											isPWRow = false;
+											break;
+										}
+									}
+								} else if (ghostCell.row == playerPos.row){
+									//check col
+									isPWRow = false;
+									if (colD < 0){
+										var fromCol = ghostCell.col;
+										var tocol = playerPos.col;
+									}else{
+										var fromCol = playerPos.col;
+										var toCol = ghostCell.col;
+									}
+
+									//console.log('fromCol: ' + fromCol + ' | toCol: ' + toCol);
+									for (var i=fromCol; i<=toCol; i++){
+										if (['xxxpwe', 'xxxpwc', 'xxxpwp', 'xx1hts', 'xx2hts', 'xx3hts', 'xx5hts', 'xx7hts', 'xxxxhe', 'xxxxte'].indexOf(actLevel.layout[ghostCell.row][i].toLowerCase()) == -1){
+											isPWCol = false;
+											break;
+										}
+									}
+								}
+
+								//console.log(ghost.props.name + ' is in same row/coll as the player');
+								//console.log('pathway row: ' + isPWRow + ' | pathway col: ' + isPWCol);
+
+								//go there if row or col is pathway
+								if ((isPWRow || isPWCol) && playProps.reTrySec >= .2){
+									//ghost speed up
+									var speedLRatio = 2;
+									ghosts.setSpeed(playProps.ghostsSpeed + speedLRatio + playProps.ghostsSpeed * 5 / 100, 'oikake')
+
+									//red
+									ghosts.setTarget(playerPos.col, playerPos.row, 'oikake', true, stepBuffLen, maxVisCells);
+
+									//cyan
+									var OIKEnt = _getGhostByName('oikake');
+									var OIKPos = renderer.XYToColRow(OIKEnt.position.x, OIKEnt.position.y);
+									var OIKPRDist = Math.abs(OIKPos.row - playerPos.row);
+									var OIKPCDist = Math.abs(OIKPos.col - playerPos.col);
+									if (OIKPCDist <= 5 && OIKPRDist <=5){
+										var KGCol = playerDir == 'left' ? playerPos.col - OIKPCDist  : playerPos.col + OIKPCDist * 2;
+										var KGRow = playerDir == 'up' ? playerPos.row - OIKPRDist  : playerPos.row + OIKPRDist * 2;
+									}else{
+										var KGCol = playerDir == 'left' ? playerPos.col - 2 : playerPos.col + 2;
+										var KGRow = playerDir == 'up' ? playerPos.row - 2 : playerPos.row + 2;
+									}
+									ghosts.setTarget(KGCol , KGRow, 'kimagure', true, stepBuffLen, maxVisCells);
+
+									//pink
+									var MBCol = playerDir == 'left' ? playerPos.col - 4 : playerPos.col + 4;
+									var MBRow = playerDir == 'up' ? playerPos.row - 4 : playerPos.row + 4;
+									ghosts.setTarget(MBCol, MBRow, 'machibuse', true, stepBuffLen, maxVisCells);
+
+
+									playProps.reTrySec = 0;
+								}
+
+								playProps.lastPlyrPos.col = playerPos.col;
+								playProps.lastPlyrPos.row = playerPos.row;
+							}
+						});
+					}*/
 
 					//stalker retry
-					//if (playProps.ghostsMood == 'stalker' && playProps.reTrySec >= (gameLevel > 5 ? 1 : 2)){
-					if (playProps.ghostsMood == 'stalker' && playProps.reTrySec >= 2){
-						if (_playerInShelter() && playProps.ghostsMood != 'wander') {
-							//console.log('shelter');
-							playProps.ghostsMood = 'wander';
+					if (playProps.ghostsMood == 'stalker' && playProps.reTrySec >= .1){
+						//ghost speed up
+						//var speedLRatio = gameLevel >= 5 ? 4 : 2;
+						var speedLRatio = 2;
+						ghosts.setSpeed(playProps.ghostsSpeed + speedLRatio + playProps.ghostsSpeed * 5 / 100, 'oikake')
+
+						//red
+						ghosts.setTarget(playerPos.col, playerPos.row, 'oikake', true, stepBuffLen, maxVisCells);
+
+						//cyan
+						var OIKEnt = _getGhostByName('oikake');
+						var OIKPos = renderer.XYToColRow(OIKEnt.position.x, OIKEnt.position.y);
+						var OIKPRDist = Math.abs(OIKPos.row - playerPos.row);
+						var OIKPCDist = Math.abs(OIKPos.col - playerPos.col);
+						if (OIKPCDist <= 5 && OIKPRDist <=5){
+							var KGCol = playerDir == 'left' ? playerPos.col - OIKPCDist  : playerPos.col + OIKPCDist * 2;
+							var KGRow = playerDir == 'up' ? playerPos.row - OIKPRDist  : playerPos.row + OIKPRDist * 2;
 						}else{
-							if (playerPos.col != playProps.lastPlyrPos.col || playerPos.row != playProps.lastPlyrPos.row){
-								//ghost speed up
-								//var speedLRatio = gameLevel >= 5 ? 4 : 2;
-								var speedLRatio = 2;
-								ghosts.setSpeed(playProps.ghostsSpeed + speedLRatio + playProps.ghostsSpeed * 5 / 100, 'oikake')
-
-								//red
-								ghosts.setTarget(playerPos.col, playerPos.row, 'oikake', true, 20, maxVisCells);
-
-								//cyan
-								var OIKEnt = _getGhostByName('oikake');
-								var OIKPos = renderer.XYToColRow(OIKEnt.position.x, OIKEnt.position.y);
-								var OIKPRDist = Math.abs(OIKPos.row - playerPos.row);
-								var OIKPCDist = Math.abs(OIKPos.col - playerPos.col);
-								if (OIKPCDist <= 5 && OIKPRDist <=5){
-									var KGCol = playerDir == 'left' ? playerPos.col - OIKPCDist  : playerPos.col + OIKPCDist * 2;
-									var KGRow = playerDir == 'up' ? playerPos.row - OIKPRDist  : playerPos.row + OIKPRDist * 2;
-								}else{
-									var KGCol = playerDir == 'left' ? playerPos.col - 2 : playerPos.col + 2;
-									var KGRow = playerDir == 'up' ? playerPos.row - 2 : playerPos.row + 2;
-								}
-								ghosts.setTarget(KGCol , KGRow, 'kimagure', true, 20, maxVisCells);
-
-								//pink
-								var MBCol = playerDir == 'left' ? playerPos.col - 4 : playerPos.col + 4;
-								var MBRow = playerDir == 'up' ? playerPos.row - 4 : playerPos.row + 4;
-								ghosts.setTarget(MBCol, MBRow, 'machibuse', true, 20, maxVisCells);
-
-								playProps.reTrySec = 0;
-								playProps.xReTrySec = 0;
-							}
-
-							playProps.lastPlyrPos.col = playerPos.col;
-							playProps.lastPlyrPos.row = playerPos.row;
+							var KGCol = playerDir == 'left' ? playerPos.col - 2 : playerPos.col + 2;
+							var KGRow = playerDir == 'up' ? playerPos.row - 2 : playerPos.row + 2;
 						}
+						ghosts.setTarget(KGCol , KGRow, 'kimagure', true, stepBuffLen, maxVisCells);
+
+						//pink
+						var MBCol = playerDir == 'left' ? playerPos.col - 4 : playerPos.col + 4;
+						var MBRow = playerDir == 'up' ? playerPos.row - 4 : playerPos.row + 4;
+						ghosts.setTarget(MBCol, MBRow, 'machibuse', true, stepBuffLen, maxVisCells);
+
+						playProps.reTrySec = 0;
+
+						playProps.lastPlyrPos.col = playerPos.col;
+						playProps.lastPlyrPos.row = playerPos.row;
+
+						//console.log('stalker retry.');
+						//console.log('pink target: ' + MBCol + ', ' + MBRow);
 					}
 
 					//extras
-					if (playProps.ghostsMood == 'stalker' && playProps.xReTrySec >= .2){
-						if (playerPos.col != playProps.lastPlyrPos.col || playerPos.row != playProps.lastPlyrPos.row){
+					if (playProps.ghostsMood == 'stalker' && playProps.xReTrySec >= .1){
+						if (playerPos.col != playProps.lastPlyrPos.col){
 							var OIKEnt = _getGhostByName('oikake');
 							var OIKPos = renderer.XYToColRow(OIKEnt.position.x, OIKEnt.position.y);
 							var OIKPRDist = Math.abs(OIKPos.row - playerPos.row);
 							var OIKPCDist = Math.abs(OIKPos.col - playerPos.col);
 
-							if (OIKPRDist <= 2 && OIKPCDist <= 5){
-								/*if (OIKPos.row == playerPos.row){
-									var pCol = playerDir == 'left' ? playerPos.col - 2 : playerDir == 'right' ? playerPos.col + 2 : playerPos.col;
-								}else{
-									var pCol = playerPos.col;
-								}
+							if (OIKPRDist <= 2 && OIKPCDist <= 10){
+								ghosts.setTarget(playerPos.col, playerPos.row, 'oikake', true, 2, maxVisCells);
 
-								ghosts.setTarget(pCol, playerPos.row, 'oikake', true, 1, maxVisCells);*/
-								ghosts.setTarget(playerPos.col, playerPos.row, 'oikake', true, 1, maxVisCells);
+								//console.log('oikake closing in.');
 							}
+
+							playProps.lastPlyrPos.col = playerPos.col;
+							playProps.lastPlyrPos.row = playerPos.row;
 						}
 
 						playProps.xReTrySec = 0;
-						playProps.lastPlyrPos.col = playerPos.col;
-						playProps.lastPlyrPos.row = playerPos.row;
 					}
 				}
 				/***********************************************/
