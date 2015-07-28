@@ -445,11 +445,16 @@ var ghosts = (function(){
 							break;
 					}
 
-					ghost.router.setRoute({ row : curPos.row, col : curPos.col}, { row : r, col : c}, stalker);
 					ghost.stepBuffLen = 20;
-					ghost.nextCells = [];
 					ghost.router.maxVisitedCells = 0;
-					ghost.newRoute = true;
+					if (typeof ghost.nextCells === 'undefined' || !ghost.nextCells.length){
+						ghost.router.setRoute({ row : curPos.row, col : curPos.col}, { row : r, col : c}, stalker);
+						ghost.nextCells = [];
+						ghost.newRoute = true;
+					} else {
+						ghost.router.destPos.row = r;
+						ghost.router.destPos.col = c;
+					}
 				}
 			})
 		},
