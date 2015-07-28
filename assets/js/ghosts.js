@@ -399,6 +399,7 @@ var ghosts = (function(){
 				if (theGhost.needRepos || theGhost.teleporting || theGhost.inTeleport || theGhost.freezed || theGhost.eaten || theGhost.inCage) return;
 				theGhost.stepBuffLen = isNaN(buffSteps) ? 20 : buffSteps;
 				theGhost.router.maxVisitedCells = isNaN(maxVisitedCells) ? 0 : maxVisitedCells;
+				theGhost.router.stalker = isStalker;
 				theGhost.router.destPos.row = row;
 				theGhost.router.destPos.col = col;
 			} else if (name == null){//move all
@@ -406,6 +407,7 @@ var ghosts = (function(){
 					if (!ghost.needRepos && !ghost.teleporting && !ghost.inTeleport && !ghost.freezed && !ghost.eaten && !ghost.inCage){
 						ghost.stepBuffLen = isNaN(buffSteps) ? 20 : buffSteps;
 						ghost.router.maxVisitedCells = isNaN(maxVisitedCells) ? 0 : maxVisitedCells;
+						ghost.router.stalker = isStalker;
 						ghost.router.destPos.row = row;
 						ghost.router.destPos.col = col;
 					}
