@@ -708,7 +708,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 						ghosts.setTarget(MBCol, MBRow, 'machibuse', true, stepBuffLen, maxVisCells);
 
 						//orange
-						ghosts.setTarget(playerPos.col, playerPos.row, 'otoboke', true, stepBuffLen, maxVisCells);
+						ghosts.setTarget(playerPos.col, playerPos.row, 'otoboke', true, 20, maxVisCells);
 
 						playProps.reTrySec = 0;
 						playProps.xReTrySec = 0;
