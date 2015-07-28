@@ -674,7 +674,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 
 					/***********************************************/
 					//ghosts wander/stalker mood switch
-					var maxVisCells = 2, stepBuffLen = 8;
+					var maxVisCells = 2, stepBuffLen = 4;
 					if (playProps.doMoodSwitch){
 						playProps.secs = isNaN(playProps.secs) ? deltaT : playProps.secs + deltaT;
 						playProps.reTrySec += deltaT;
