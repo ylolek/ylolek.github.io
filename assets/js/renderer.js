@@ -205,7 +205,7 @@ var renderer = (function(){
 			ctx.clearRect(x - xD, y - yD, xD * 4, yD * 4);
 		},
 
-		drawLayout : function(img){
+		drawLayout : function(img, rgbaArr){
 			//no canvas set
 			if (typeof this.layoutCtx != 'object'){
 				error.throw('InvalidLayoutCanvas', this.layoutCtx + ' is not an object. call renderer.init first.');
@@ -221,6 +221,34 @@ var renderer = (function(){
 					renderer.drawCell(img, colIndex, rowIndex, '#000', renderer.layoutCtx);
 				});
 			});
+
+			//recolor them, if rgbaArr
+			//var rgbaArr =  [0, 222, 222, 255];
+			var ctx = renderer.layoutCtx;
+			if (rgbaArr instanceof Array && rgbaArr.length >= 4){
+				var ctxImgLen = (cellWidth * cols) * (cellHeight * rows);
+				var ctxImg = new Image();
+				ctxImg = ctx.getImageData(0, 0, (cellWidth * cols), (cellHeight * rows));
+
+				//set rgba channels
+				for (var i=0; i<ctxImgLen*4; i+=4){
+					//leave transparent parts out
+					if (ctxImg.data[i] == 33 && ctxImg.data[i + 1] == 33 && ctxImg.data[i + 2] == 255){
+						//red
+						ctxImg.data[i] = rgbaArr[0];
+						//green
+						ctxImg.data[i + 1] = rgbaArr[1];
+						//blue
+						ctxImg.data[i + 2] = rgbaArr[2];
+						//alpha
+						ctxImg.data[i + 3] = rgbaArr[3];
+					}
+				}
+
+				ctx.putImageData(ctxImg, 0, 0);
+
+				ctxImg = null;
+			}
 		},
 
 		print : function(msgStr, img, x, y, rgbaArr, ctx){
@@ -284,7 +312,7 @@ var renderer = (function(){
 					//set rgba channels
 					for (var i=0; i<consImgLen*4; i+=4){
 						//leave transparent parts out
-						if (consoleImg.data[i] != 0 || consoleImg.data[i + 1] != 0 || consoleImg.data[i + 2] != 0){
+						if (consoleImg.data[i] != 0 && consoleImg.data[i + 1] != 0 && consoleImg.data[i + 2] != 0){
 							//red
 							consoleImg.data[i] = rgbaArr[0];
 							//green

@@ -31,7 +31,10 @@ document.addEventListener('DOMContentLoaded', function(event){
 		var collectables = [];
 		var collHistory = [];
 		var CLIndex  = 	[0, 1, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8];
-		var CLPts =	[0, 100, 300, 500, 500, 700, 700, 1000, 1000, 2000, 2000, 3000, 3000, 5000]
+		var CLPts =	[0, 100, 300, 500, 500, 700, 700, 1000, 1000, 2000, 2000, 3000, 3000, 5000];
+
+		var layoutCols = [[], [33, 33, 255, 255], [0, 214, 217, 255], [241, 110, 239, 255], [255, 0, 0, 255], [243, 163, 9, 255], [0, 255, 0, 255], [222, 222, 255, 255]];
+		var layColIndex = 0;
 
 		var aF;
 		var lastTime = performance.now() || Date.now();
@@ -1010,7 +1013,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 						});
 					}else{//every other level will use level 1 properties
 						//draw layout
-						renderer.drawLayout(gameImg);
+						renderer.drawLayout(gameImg, layoutCols[layColIndex]);
 
 						//create ghosts
 						theGhosts = [];
@@ -1133,6 +1136,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 				buildIndex = levelObj.levelIndex;
 				actLevel = levelObj.level;
 				actLevel.layout = restartLevel || buildIndex == 0 ? actLevel.layout : layouts.getLayout(buildIndex);
+				layColIndex = !restartLevel && gameLevel > 0 ? layColIndex < layoutCols.length - 1 ? layColIndex + 1 : 1 : 0;
 
 				//clean up
 				playProps.collectableIndex = gameLevel > 13 ? CLIndex[CLIndex.length - 1] : CLIndex[gameLevel];
