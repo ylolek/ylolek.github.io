@@ -1136,7 +1136,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 				buildIndex = levelObj.levelIndex;
 				actLevel = levelObj.level;
 				actLevel.layout = restartLevel || buildIndex == 0 ? actLevel.layout : layouts.getLayout(buildIndex);
-				layColIndex = !restartLevel && gameLevel > 0 ? layColIndex < layoutCols.length - 1 ? layColIndex + 1 : 1 : 0;
+				layColIndex = !restartLevel && gameLevel > 0 ? layColIndex < layoutCols.length - 1 ? layColIndex + 1 : 1 : layColIndex;
 
 				//clean up
 				playProps.collectableIndex = gameLevel > 13 ? CLIndex[CLIndex.length - 1] : CLIndex[gameLevel];
