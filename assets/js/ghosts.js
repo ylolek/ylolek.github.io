@@ -17,7 +17,8 @@ var ghosts = (function(){
 	var firstStep = true,
 		canUsePortals = false,
 		paused = false,
-		freezed = false;
+		freezed = false,
+		zzz = false;
 
 	var secs = 0,
 		freezeSec = 0,
@@ -346,6 +347,7 @@ var ghosts = (function(){
 
 	return {
 		paused : paused,
+		zzz : zzz,
 
 		setAnimation : function(animStr, deltaT, ghostEntity, anchor){
 			_setAnimation(animStr, deltaT, ghostEntity, anchor);
@@ -396,7 +398,7 @@ var ghosts = (function(){
 			}
 
 			if (theGhost != null){
-				if (theGhost.needRepos || theGhost.teleporting || theGhost.inTeleport || theGhost.freezed || theGhost.eaten || theGhost.inCage) return;
+				if (theGhost.needRepos || theGhost.teleporting || theGhost.inTeleport || theGhost.freezed || theGhost.eaten || theGhost.inCage || theGhost.zzz) return;
 				theGhost.stepBuffLen = isNaN(buffSteps) ? 20 : buffSteps;
 				theGhost.router.maxVisitedCells = isNaN(maxVisitedCells) ? 0 : maxVisitedCells;
 				theGhost.router.stalker = isStalker;
@@ -404,7 +406,7 @@ var ghosts = (function(){
 				theGhost.router.destPos.col = col;
 			} else if (name == null){//move all
 				theGhosts.forEach(function(ghost){
-					if (!ghost.needRepos && !ghost.teleporting && !ghost.inTeleport && !ghost.freezed && !ghost.eaten && !ghost.inCage){
+					if (!ghost.needRepos && !ghost.teleporting && !ghost.inTeleport && !ghost.freezed && !ghost.eaten && !ghost.inCage && !ghost.zzz){
 						ghost.stepBuffLen = isNaN(buffSteps) ? 20 : buffSteps;
 						ghost.router.maxVisitedCells = isNaN(maxVisitedCells) ? 0 : maxVisitedCells;
 						ghost.router.stalker = isStalker;
@@ -419,7 +421,7 @@ var ghosts = (function(){
 
 		spreadOut : function(stalker){
 			theGhosts.forEach(function(ghost){
-				if (!ghost.eaten && !ghost.freezed){
+				if (!ghost.eaten && !ghost.freezed && !ghost.zzz){
 					//set first route
 					var curPos = renderer.XYToColRow(ghost.entity.position.x + ghost.entity.clip.width / 2, ghost.entity.position.y + ghost.entity.clip.height / 2);
 
@@ -566,92 +568,96 @@ var ghosts = (function(){
 		gogogo : function(deltaT, dots, ghostsSpeed){
 			if (paused) return;
 
-			dotsEaten = isNaN(dots) ? 0 : dots;
-			actGhostsSpeed = ghostsSpeed;
-			secs += deltaT;
+			if (this.zzz){
+				this.setAnimation('zzz', deltaT);
+			} else {
+				dotsEaten = isNaN(dots) ? 0 : dots;
+				actGhostsSpeed = ghostsSpeed;
+				secs += deltaT;
 
-			//ghosts freezed
-			if (freezed) {
-				freezeCtrlSec += deltaT
-				if (freezeCtrlSec <= freezeSec){
-					theGhosts.forEach(function(ghost){
-						if (ghost.freezed) {
-							_shelterAccess(true, ghost.name);
-							if (!ghost.eaten) this.setAnimation('freeze', deltaT, ghost.entity, true);
-						}
-					}, this);
+				//ghosts freezed
+				if (freezed) {
+					freezeCtrlSec += deltaT
+					if (freezeCtrlSec <= freezeSec){
+						theGhosts.forEach(function(ghost){
+							if (ghost.freezed) {
+								_shelterAccess(true, ghost.name);
+								if (!ghost.eaten) this.setAnimation('freeze', deltaT, ghost.entity, true);
+							}
+						}, this);
 
 
-				}else if (freezeCtrlSec <= freezeSec + freezeEndSec){
-					theGhosts.forEach(function(ghost){
-						if (ghost.freezed && !ghost.eaten){
-							this.setAnimation('freeze_ending', deltaT, ghost.entity, true);
-						}
-					}, this);
+					}else if (freezeCtrlSec <= freezeSec + freezeEndSec){
+						theGhosts.forEach(function(ghost){
+							if (ghost.freezed && !ghost.eaten){
+								this.setAnimation('freeze_ending', deltaT, ghost.entity, true);
+							}
+						}, this);
 
-				}else{
-					//console.log('freezed end')
-					theGhosts.forEach(function(ghost, index){
-						if (ghost.entity.actAnimation.name.toLowerCase() == 'freeze_ending') ghost.entity.actAnimation.anchor = false;
-						ghost.freezed = false;
-						if (!ghost.eaten){
-							_shelterAccess(false, ghost.name);
-							ghost.entity.props.speed = ghost.inCage ? inCageSpeed : actGhostsSpeed;
-						}
-					});
+					}else{
+						//console.log('freezed end')
+						theGhosts.forEach(function(ghost, index){
+							if (ghost.entity.actAnimation.name.toLowerCase() == 'freeze_ending') ghost.entity.actAnimation.anchor = false;
+							ghost.freezed = false;
+							if (!ghost.eaten){
+								_shelterAccess(false, ghost.name);
+								ghost.entity.props.speed = ghost.inCage ? inCageSpeed : actGhostsSpeed;
+							}
+						});
 
-					//if (sounds.curPlayingBg.name != 'freeze-eaten-btc') sounds.resetBgSfx();
-					freezed = false;
-					ghostsFreezed = 0;
-					freezeCtrlSec = 0;
-				}
-			}
-
-			//reopen pathways to portals
-			if (secs >= 4 && !canUsePortals){
-				this.portalsOpen();
-				canUsePortals = true;
-			}
-
-			//let them out of the cage
-			//kimagure
-			if ((actLevel == 1 && dotsEaten >= 30) || actLevel > 1){
-				var kimagure = _getGhostByName('kimagure');
-				if (kimagure.inCage && !kimagure.eaten){
-					kimagure.router.cells[13][11].directions.right = true;
-					kimagure.router.cells[13][11].directions.down = false;
-					kimagure.router.cells[13][12].directions.right = true;
-					kimagure.router.cells[13][12].directions.down = false;
-					kimagure.router.cells[13][13].directions.right = false;
-					kimagure.router.cells[13][13].directions.down = false;
-
-					if (kimagure.nextCells.length && (kimagure.nextCells[kimagure.actStep].row <= 12 || kimagure.nextCells[kimagure.actStep].row >= 16)){
-						kimagure.inCage = false;
-						kimagure.entity.props.speed = kimagure.freezed ? freezeSpeed : actGhostsSpeed;
+						//if (sounds.curPlayingBg.name != 'freeze-eaten-btc') sounds.resetBgSfx();
+						freezed = false;
+						ghostsFreezed = 0;
+						freezeCtrlSec = 0;
 					}
 				}
-			}
 
-			//otoboke
-			if (( (actLevel == 1 || actLevel == 2) && dotsEaten >= 80) || actLevel >= 3){
-				var otoboke = _getGhostByName('otoboke');
-				if (otoboke.inCage && !otoboke.eaten){
-					otoboke.router.cells[13][16].directions.left = true;
-					otoboke.router.cells[13][16].directions.down = false;
-					otoboke.router.cells[13][15].directions.left = true;
-					otoboke.router.cells[13][15].directions.down = false;
-					otoboke.router.cells[13][14].directions.left = false;
-					otoboke.router.cells[13][14].directions.down = false;
+				//reopen pathways to portals
+				if (secs >= 4 && !canUsePortals){
+					this.portalsOpen();
+					canUsePortals = true;
+				}
 
-					if (otoboke.nextCells.length && (otoboke.nextCells[otoboke.actStep].row <= 12 || otoboke.nextCells[otoboke.actStep].row >= 16)){
-						otoboke.inCage = false;
-						otoboke.entity.props.speed = otoboke.freezed ? freezeSpeed : actGhostsSpeed;
+				//let them out of the cage
+				//kimagure
+				if ((actLevel == 1 && dotsEaten >= 30) || actLevel > 1){
+					var kimagure = _getGhostByName('kimagure');
+					if (kimagure.inCage && !kimagure.eaten){
+						kimagure.router.cells[13][11].directions.right = true;
+						kimagure.router.cells[13][11].directions.down = false;
+						kimagure.router.cells[13][12].directions.right = true;
+						kimagure.router.cells[13][12].directions.down = false;
+						kimagure.router.cells[13][13].directions.right = false;
+						kimagure.router.cells[13][13].directions.down = false;
+
+						if (kimagure.nextCells.length && (kimagure.nextCells[kimagure.actStep].row <= 12 || kimagure.nextCells[kimagure.actStep].row >= 16)){
+							kimagure.inCage = false;
+							kimagure.entity.props.speed = kimagure.freezed ? freezeSpeed : actGhostsSpeed;
+						}
 					}
 				}
-			}
 
-			//move ghosts to a destination
-			_hereWeCome(deltaT);
+				//otoboke
+				if (( (actLevel == 1 || actLevel == 2) && dotsEaten >= 80) || actLevel >= 3){
+					var otoboke = _getGhostByName('otoboke');
+					if (otoboke.inCage && !otoboke.eaten){
+						otoboke.router.cells[13][16].directions.left = true;
+						otoboke.router.cells[13][16].directions.down = false;
+						otoboke.router.cells[13][15].directions.left = true;
+						otoboke.router.cells[13][15].directions.down = false;
+						otoboke.router.cells[13][14].directions.left = false;
+						otoboke.router.cells[13][14].directions.down = false;
+
+						if (otoboke.nextCells.length && (otoboke.nextCells[otoboke.actStep].row <= 12 || otoboke.nextCells[otoboke.actStep].row >= 16)){
+							otoboke.inCage = false;
+							otoboke.entity.props.speed = otoboke.freezed ? freezeSpeed : actGhostsSpeed;
+						}
+					}
+				}
+
+					//move ghosts to a destination
+					_hereWeCome(deltaT);
+			}
 		},
 
 		create : function(ghostArr, targetPos, layout, gameW, gameH, gameLevel){
@@ -678,7 +684,7 @@ var ghosts = (function(){
 			cellHeight = gameHeight / playGround.length;
 
 			//get pathways
-			pathways = _getCells(['xxxpwe', 'xxxpwc']);
+			pathways = _getCells(['xxxpwe', 'xxxpwc', 'xxpwc2']);
 
 			var ghostEntities = [];
 
@@ -699,6 +705,7 @@ var ghosts = (function(){
 				ghost.freezed = false;
 				ghost.eaten = false;
 				ghost.inCage = false;
+				ghost.zzz = false;
 				ghost.lastDirection = '';
 				ghost.toNextStep = false;
 				ghost.dirPreStr = '';
@@ -710,7 +717,7 @@ var ghosts = (function(){
 				}
 
 				//create ghosts router
-				theGhosts[index].router = new pathFinder({layout : layout, pathways : ['xxxpwe', 'xxxpwc', 'xxxpwp', 'xx1hts', 'xx2hts', 'xx3hts', 'xx5hts', 'xx7hts', 'xxxxhe', 'xxxxte']});
+				theGhosts[index].router = new pathFinder({layout : layout, pathways : ['xxxpwe', 'xxxpwc', 'xxpwc2', 'xxxpwp', 'xx1hts', 'xx2hts', 'xx3hts', 'xx5hts', 'xx7hts', 'xxxxhe', 'xxxxte']});
 
 				//setup cage
 				for (var rowI=12; rowI<=13; rowI++){

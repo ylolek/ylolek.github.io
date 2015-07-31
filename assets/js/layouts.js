@@ -93,8 +93,8 @@ var layouts = (function(){
 					XXXCDR : { x: 192, y: 60 }, //Cage Door Right
 
 					//pathways
-					XXXPWC : { x: 192, y: 0 }, //Patway With Collectable (basically dots here)
-					//XXXPWC : { x: 204, y: 0 }, //Patway With Collectable (basically dots here)
+					XXXPWC : { x: 192, y: 0 }, //Patway With Collectable
+					XXPWC2 : { x: 204, y: 0 }, //Patway With Collectable (bigger dot)
 					XXXPWE : { x: 264, y: 0 },  //PathWay Empty
 					XXXPWP : { x: 264, y: 0 },  //PathWay Portal
 

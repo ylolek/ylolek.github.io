@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 		isWBlur = false,
 		restartLevel = false,
 		canReact = false,
+		bonusLevel = false,
 		isTouchDev = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0,
 		maxLevels = 256,
 		gameLevel = 1,
@@ -42,6 +43,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 		var playProps = {
 			lives : 4,
 			naxLives : 5,
+			levelEntLives : 4,
 			lastLifePts : 0,
 			secs : 0,
 			reTrySec : 0,
@@ -219,7 +221,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 		//checks if there is pathway in the given direction
 		var _isPathWay = function(direction){
 			//XXXPWE, XXXPWC are the pathways
-			var pways = ['xxxpwe', 'xxxpwc', 'xxxpwp', 'xx1hts', 'xx2hts', 'xx3hts', 'xx5hts', 'xx7hts', 'xxxxhe', 'xxxxte'];
+			var pways = ['xxxpwe', 'xxxpwc', 'xxpwc2', 'xxxpwp', 'xx1hts', 'xx2hts', 'xx3hts', 'xx5hts', 'xx7hts', 'xxxxhe', 'xxxxte'];
 			var playerCell = renderer.XYToColRow(player.position.x + player.clip.width / 2, player.position.y + player.clip.height / 2);
 			var layout = actLevel.layout;
 			var isPathWay = false;
@@ -278,9 +280,11 @@ document.addEventListener('DOMContentLoaded', function(event){
 
 					break;
 
-				case 'xxxpwc' : //dot
+				//dot
+				case 'xxpwc2' :
+				case 'xxxpwc' :
 					//add points
-					playProps.score += 10;
+					playProps.score += playerCellType == 'xxxpwc' ? 10 : 20;
 					playProps.dots += 1;
 
 					_updateScores();
@@ -307,7 +311,9 @@ document.addEventListener('DOMContentLoaded', function(event){
 
 					//all dots eaten
 					if (playProps.dots >= playProps.maxDots){
-						_nextLevel();
+						var levelType = playProps.lives >= playProps.levelEntLives && !bonusLevel ? 'bonus' : '';
+
+						_nextLevel(levelType);
 					}
 
 					break;
@@ -420,31 +426,35 @@ document.addEventListener('DOMContentLoaded', function(event){
 							playProps.lives--;
 
 							var GCID = window.setTimeout(function(){
+								window.clearTimeout(GCID);
+
 								showGhosts = false;
 								ghosts.erase();
-
-								window.clearTimeout(GCID);
 							}, 1500);
 
 							var PDAID = window.setTimeout(function(){
+								window.clearTimeout(PDAID);
+
 								//sounds.play('death', true);
 
 								player.playAnim = true;
 								playerAnim = 'hit';
-
-								window.clearTimeout(PDAID);
 							}, 1700);
 
 							var LRID = window.setTimeout(function(){
+								window.clearTimeout(LRID);
+
 								paused = true;
 
 								if (playProps.lives <= 0){
 									_gameOver();
 								}else{
-									_restartLevel();
+									if (bonusLevel){
+										_nextLevel();
+									} else {
+										_restartLevel();
+									}
 								}
-
-								window.clearTimeout(LRID);
 							}, 4500);
 						}
 					}
@@ -537,7 +547,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 		}
 
 		var _showCollHistory = function(){
-			if (!restartLevel) collHistory.push(collectables[playProps.collectableIndex]);
+			if (!restartLevel && !bonusLevel) collHistory.push(collectables[playProps.collectableIndex]);
 			if (collHistory.length > 7) collHistory = collHistory.splice(1, collHistory.length - 1);
 			var sX = 300;
 			collHistory.forEach(function(coll){
@@ -570,6 +580,8 @@ document.addEventListener('DOMContentLoaded', function(event){
 			window.cancelAnimationFrame(aF);
 			window.clearInterval(aF);
 
+			document.getElementById('game').classList.remove('flip');
+
 			//sounds.resetSfx();
 			//sounds.resetBgSfx();
 
@@ -582,7 +594,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 			}, 2000);
 		}
 
-		var _nextLevel = function(){
+		var _nextLevel = function(levelType){
 			//sounds.resetSfx();
 			//sounds.resetBgSfx();
 
@@ -591,7 +603,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 
 			canReact = false;
 			ghosts.hangOn();
-			player.gotoAndStop(3);
+			if (!bonusLevel) player.gotoAndStop(3);
 			playerAnim = '';
 			paused = true;
 
@@ -600,7 +612,8 @@ document.addEventListener('DOMContentLoaded', function(event){
 			var NLID = window.setTimeout(function(){
 				window.clearTimeout(NLID);
 
-				game.playLevel(gameLevel + 1);
+				var toLevel = typeof levelType === 'string' && levelType.length ? 'bonus' : gameLevel + 1;
+				game.playLevel(toLevel);
 			}, 1500);
 		}
 
@@ -650,6 +663,10 @@ document.addEventListener('DOMContentLoaded', function(event){
 
 			}else{
 				if (!paused && !isWBlur){
+
+					//*wake up* ghosts, if player enters *their* area
+					if (bonusLevel && playerPos.row >= 11 && playerPos.row <= 16 && playerPos.col >= 9 && playerPos.col <= 18) ghosts.zzz = false;
+
 					//move player
 					_movePlayer(deltaT);
 
@@ -1016,6 +1033,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 						renderer.drawLayout(gameImg, layoutCols[layColIndex]);
 
 						//create ghosts
+						ghosts.zzz = bonusLevel ? true : false;
 						theGhosts = [];
 						theGhosts = ghosts.create(actLevel.ghosts, player.position, actLevel.layout, 336, 372, gameLevel);
 
@@ -1056,6 +1074,8 @@ document.addEventListener('DOMContentLoaded', function(event){
 
 							showGhosts = true;
 							ghosts.dontHangOn();
+
+							if (bonusLevel) document.getElementById('game').classList.add('flip');
 						}, (restartLevel ? 0 : 2000));
 
 						//start player
@@ -1088,7 +1108,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 						}
 
 						_updateScores();
-						renderer.print('ready!', gameImg, 133, 241, [255, 255, 33, 255]);
+						renderer.print(bonusLevel ? 'bonus!' : 'ready!', gameImg, 133, 241, [255, 255, 33, 255]);
 					}
 
 					restartLevel = false;
@@ -1120,10 +1140,16 @@ document.addEventListener('DOMContentLoaded', function(event){
 				//sounds.resetSfx();
 				//sounds.resetBgSfx();
 
-				if (levelIndex > maxLevels){
-					gameLevel = levelIndex = 0;
-				}else {
-					gameLevel = levelIndex;
+				if (isNaN(levelIndex) && !bonusLevel){
+					bonusLevel = true;
+					levelIndex = gameLevel;
+				} else {
+					bonusLevel = false;
+					if (levelIndex > maxLevels){
+						gameLevel = levelIndex = 0;
+					}else {
+						gameLevel = levelIndex;
+					}
 				}
 
 				//console.log(gameLevel)
@@ -1136,7 +1162,16 @@ document.addEventListener('DOMContentLoaded', function(event){
 				buildIndex = levelObj.levelIndex;
 				actLevel = levelObj.level;
 				actLevel.layout = restartLevel || buildIndex == 0 ? actLevel.layout : layouts.getLayout(buildIndex);
-				layColIndex = !restartLevel && gameLevel > 0 ? layColIndex < layoutCols.length - 1 ? layColIndex + 1 : 1 : layColIndex;
+
+				if (bonusLevel){
+					actLevel.layout.forEach(function(row, rowIndex){
+						row.forEach(function(cell, colIndex){
+							if (cell.toLowerCase() == 'xxxpwc') actLevel.layout[rowIndex][colIndex] = 'XXPWC2';
+						});
+					});
+				}
+
+				layColIndex = !bonusLevel && !restartLevel && gameLevel > 0 ? layColIndex < layoutCols.length - 1 ? layColIndex + 1 : 1 : layColIndex;
 
 				//clean up
 				playProps.collectableIndex = gameLevel > 13 ? CLIndex[CLIndex.length - 1] : CLIndex[gameLevel];
@@ -1147,7 +1182,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 				//playProps.secs = restartLevel ? playProps.secs : 0;
 				playProps.secs = 0;
 				playProps.reTrySec = 0;
-				playProps.maxDots = buildIndex == 0 ? 0 : layouts.getCellsByType(buildIndex, ['xxxpwc']).length,
+				playProps.maxDots = buildIndex == 0 ? 0 : layouts.getCellsByType(buildIndex, ['xxxpwc', 'xxpwc2']).length,
 				playProps.ghostsMood = 'wander';
 
 				playProps.levelSRatio = gameLevel > 5 ? 4 : 2;
@@ -1155,6 +1190,9 @@ document.addEventListener('DOMContentLoaded', function(event){
 				//console.log('ghostsSpeed: ' + playProps.ghostsSpeed)
 
 				playProps.lastPlyrPos = { col : 0, row : 0};
+				if (!restartLevel) playProps.levelEntLives = playProps.lives;
+				document.getElementById('game').classList.remove('flip');
+
 
 				_loadResources(buildIndex);
 
