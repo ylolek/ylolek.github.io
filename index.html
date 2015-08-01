@@ -67,6 +67,7 @@
 				transform-style: preserve-3d;
    			}
 
+
 			.flip{
 				-webkit-transform: rotateY(-180deg);
 				-moz-transform: rotateY(-180deg);
@@ -74,6 +75,17 @@
 				-ms-transform: rotateY(-180deg);
 				transform: rotateY(-180deg);
 			}
+
+				/*fix webkit z-index *problem* on windows*/
+				@media screen and (-webkit-min-device-pixel-ratio : 0){
+					.flip #layoutCanvas{
+						z-index: 6 !important;
+					}
+
+					.flip #gameCanvas{
+						z-index: 5 !important;
+					}
+				}
 
 			.info{
 				position: fixed;

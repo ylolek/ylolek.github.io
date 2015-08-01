@@ -1074,6 +1074,8 @@ document.addEventListener('DOMContentLoaded', function(event){
 
 							showGhosts = true;
 							ghosts.dontHangOn();
+
+							if (bonusLevel) document.getElementById('game').classList.add('flip');
 						}, (restartLevel ? 0 : 2000));
 
 						//start player
@@ -1096,8 +1098,6 @@ document.addEventListener('DOMContentLoaded', function(event){
 								_playerCtrl();
 
 								canReact = true;
-
-								if (bonusLevel) document.getElementById('game').classList.add('flip');
 							}
 						}, (restartLevel ? 2000 : 4200));
 
@@ -1191,6 +1191,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 
 				playProps.lastPlyrPos = { col : 0, row : 0};
 				if (!restartLevel) playProps.levelEntLives = playProps.lives;
+
 				document.getElementById('game').classList.remove('flip');
 
 

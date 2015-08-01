@@ -58,17 +58,17 @@ var renderer = (function(){
 				if (isGameCont == null) document.body.appendChild(gameContainer);
 
 				//layout canvas
-				var layoutA = this.setCanvas('layoutCanvas', contProps.width, contProps.height, 'position: absolute; top: 36px; left: 0; max-width: 100%; z-index: 5;');
+				var layoutA = this.setCanvas('layoutCanvas', contProps.width, contProps.height, 'position: absolute; top: 36px; left: 0; max-width: 100%; z-index: 5; -webkit-transform: translate3d(0,0,0);');
 				this.layoutCanvas = layoutA.canvas;
 				this.layoutCtx = layoutA.context;
 
 				//game canvas
-				var gameA = this.setCanvas('gameCanvas', contProps.width, contProps.height, 'position: absolute; top: 36px; left: 0; max-width: 100%; z-index: 6;');
+				var gameA = this.setCanvas('gameCanvas', contProps.width, contProps.height, 'position: absolute; top: 36px; left: 0; max-width: 100%; z-index: 6; -webkit-transform: translate3d(0,0,0);');
 				this.gameCanvas = gameA.canvas;
 				this.gameCtx = gameA.context;
 
 				//console canvas
-				var consoleA = this.setCanvas('consoleCanvas', contProps.width, contProps.height + 80, 'position: absolute; top: 0; left: 0; max-width: 100%; z-index: 7;');
+				var consoleA = this.setCanvas('consoleCanvas', contProps.width, contProps.height + 80, 'position: absolute; top: 0; left: 0; max-width: 100%; z-index: 7; -webkit-transform: translate3d(0,0,0);');
 				this.consoleCanvas = consoleA.canvas;
 				this.consoleCtx = consoleA.context;
 
