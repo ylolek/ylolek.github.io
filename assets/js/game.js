@@ -75,8 +75,8 @@ document.addEventListener('DOMContentLoaded', function(event){
 			isWBlur = true;
 			toDir = '';
 			cutscenes.pause();
-			//sounds.pause();
-			//sounds.pauseBg();
+			sounds.pause();
+			sounds.pauseBg();
 		})
 
 		window.addEventListener('focus', function(){
@@ -86,8 +86,8 @@ document.addEventListener('DOMContentLoaded', function(event){
 						toDir = playerDir;
 						isWBlur = false;
 						if (!paused){
-							//sounds.resume();
-							//sounds.resumeBg();
+							sounds.resume();
+							sounds.resumeBg();
 						}
 					} else{
 						cutscenes.pause();
@@ -118,13 +118,13 @@ document.addEventListener('DOMContentLoaded', function(event){
 							if (paused){
 								paused = true;
 								toDir = '';
-								//sounds.pause();
-								//sounds.pauseBg();
+								sounds.pause();
+								sounds.pauseBg();
 							}else{
 								toDir = playerDir;
 								paused = false;
-								//sounds.resume();
-								//sounds.resumeBg();
+								sounds.resume();
+								sounds.resumeBg();
 							}
 						}
 					break;
@@ -301,7 +301,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 
 					//play sound
 					dSndI = !dSndI;
-					//sounds.play(dSndI ? 'dot1' : 'dot2');
+					sounds.play(dSndI ? 'dot1' : 'dot2');
 
 					//check for collectable show time
 					if (playProps.dots == 80 || playProps.dots == 160){
@@ -397,7 +397,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 						playerAnim = playProps.gEatPts.toString();
 						_updateScores();
 
-						//sounds.play('freeze-eaten', true);
+						sounds.play('freeze-eaten', true);
 
 						ghosts.eaten(ghost.props.name);
 
@@ -416,7 +416,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 						if (ghostCell.row == playerCell.row && ghostCell.col == playerCell.col){
 							ghosts.hangOn();
 
-							//sounds.pauseBg();
+							sounds.pauseBg();
 
 							canReact = false;
 							player.playAnim = false;
@@ -435,7 +435,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 							var PDAID = window.setTimeout(function(){
 								window.clearTimeout(PDAID);
 
-								//sounds.play('death', true);
+								sounds.play('death', true);
 
 								player.playAnim = true;
 								playerAnim = 'hit';
@@ -501,7 +501,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 						}
 					}, 2000);
 
-					//sounds.play('collectable');
+					sounds.play('collectable');
 				}
 			}
 
@@ -582,8 +582,8 @@ document.addEventListener('DOMContentLoaded', function(event){
 
 			document.getElementById('game').classList.remove('flip');
 
-			//sounds.resetSfx();
-			//sounds.resetBgSfx();
+			sounds.resetSfx();
+			sounds.resetBgSfx();
 
 			renderer.print('game over', gameImg, 114, 241, [222, 0, 0, 255]);
 
@@ -595,8 +595,8 @@ document.addEventListener('DOMContentLoaded', function(event){
 		}
 
 		var _nextLevel = function(levelType){
-			//sounds.resetSfx();
-			//sounds.resetBgSfx();
+			sounds.resetSfx();
+			sounds.resetBgSfx();
 
 			playProps.dots = 0;
 			playProps.gEatPts = 0;
@@ -688,7 +688,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 
 						_showLives();
 
-						//sounds.play('extra-life', true);
+						sounds.play('extra-life', true);
 					}
 
 
@@ -736,7 +736,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 						playProps.lastPlyrPos.col = 0;
 						playProps.lastPlyrPos.row = 0;
 
-						//sounds.play('stalker-on', true);
+						sounds.play('stalker-on', true);
 
 						//console.log('stalker mode on.');
 
@@ -975,7 +975,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 				}
 
 				//sound ctrl
-				//sounds.check();
+				sounds.check();
 			}
 
 			lastTime = now;
@@ -1103,7 +1103,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 
 						//play intro music
 						if (!restartLevel){
-							//sounds.play('start-music');
+							sounds.play('start-music');
 							renderer.print('player one', gameImg, 107, 169, [0, 222, 222, 255]);
 						}
 
@@ -1137,8 +1137,8 @@ document.addEventListener('DOMContentLoaded', function(event){
 
 				canReact = false;
 
-				//sounds.resetSfx();
-				//sounds.resetBgSfx();
+				sounds.resetSfx();
+				sounds.resetBgSfx();
 
 				if (isNaN(levelIndex) && !bonusLevel){
 					bonusLevel = true;
@@ -1207,7 +1207,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 	var initID = window.setTimeout(function(){
 		window.clearTimeout(initID);
 
-		////sounds.load(function(){
+		//sounds.load(function(){
 			//after sounds has loaded
 			game.playLevel(0);
 		//});

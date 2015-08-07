@@ -73,6 +73,7 @@ var sounds = (function(){
 	var sfxCtrl = new Audio(), bgLoopSfx = new Audio();
 	sfxPaused = false;
 	sfxBgPaused = false;
+	var sfxOff = true;
 	var curPlayingBg = {
 		name : '',
 		startSec : 0,
@@ -140,7 +141,7 @@ var sounds = (function(){
 		},
 
 		playBgLoop : function(name, anchor){
-			if (typeof name !== 'string' || name.trim().length == 0	|| curPlayingBg.name.toLowerCase() == name.toLowerCase() || curPlayingBg.anchor){
+			if (sfxOff || typeof name !== 'string' || name.trim().length == 0	|| curPlayingBg.name.toLowerCase() == name.toLowerCase() || curPlayingBg.anchor){
 				return false;
 			}
 
@@ -165,7 +166,7 @@ var sounds = (function(){
 
 		//if anchored currently playing 'stops' and just the *name* sound will play until finishes
 		play : function(name, anchor){
-			if (typeof name !== 'string' || name.trim().length == 0	|| curPlaying.name.toLowerCase() == name.toLowerCase() || curPlaying.anchor){
+			if (sfxOff || typeof name !== 'string' || name.trim().length == 0	|| curPlaying.name.toLowerCase() == name.toLowerCase() || curPlaying.anchor){
 				return false;
 			}
 
@@ -231,7 +232,7 @@ var sounds = (function(){
 
 		//call it in a loop
 		check : function(){
-			if (typeof curPlaying.endSec === 'undefined'){
+			if (sfxOff || typeof curPlaying.endSec === 'undefined'){
 				return false;
 			}
 

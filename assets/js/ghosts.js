@@ -234,12 +234,12 @@ var ghosts = (function(){
 
 						renderer.rePaintCells(14, 14, 2, 1, '#000');
 
-						/*if (freezed) {
+						if (freezed) {
 							sounds.resetBgSfx();
 							if (sounds.curPlayingBg.name != 'freeze-eaten-btc') sounds.playBgLoop('power-pill', false);
 						}else {
 							sounds.resetBgSfx();
-						}*/
+						}
 					}
 				}
 			}
@@ -513,7 +513,7 @@ var ghosts = (function(){
 			freezed = true;
 			freezeCtrlSec = 0;
 
-			//sounds.playBgLoop('power-pill', false);
+			sounds.playBgLoop('power-pill', false);
 			//console.log('freeze start')
 		},
 
@@ -557,8 +557,8 @@ var ghosts = (function(){
 				theGhost.entity.props.speed = eatenSpeed;
 				theGhost.dirPreStr = 'eaten_';
 
-				//sounds.resetBgSfx();
-				//sounds.playBgLoop('freeze-eaten-btc', true);
+				sounds.resetBgSfx();
+				sounds.playBgLoop('freeze-eaten-btc', true);
 
 				window.clearTimeout(GEID);
 			}, 1000);
@@ -605,7 +605,7 @@ var ghosts = (function(){
 							}
 						});
 
-						//if (sounds.curPlayingBg.name != 'freeze-eaten-btc') sounds.resetBgSfx();
+						if (sounds.curPlayingBg.name != 'freeze-eaten-btc') sounds.resetBgSfx();
 						freezed = false;
 						ghostsFreezed = 0;
 						freezeCtrlSec = 0;
@@ -623,12 +623,12 @@ var ghosts = (function(){
 				if ((actLevel == 1 && dotsEaten >= 30) || actLevel > 1){
 					var kimagure = _getGhostByName('kimagure');
 					if (kimagure.inCage && !kimagure.eaten){
-						kimagure.router.cells[13][11].directions.right = true;
-						kimagure.router.cells[13][11].directions.down = false;
-						kimagure.router.cells[13][12].directions.right = true;
-						kimagure.router.cells[13][12].directions.down = false;
-						kimagure.router.cells[13][13].directions.right = false;
-						kimagure.router.cells[13][13].directions.down = false;
+						kimagure.router.cells[14][11].directions.right = true;
+						kimagure.router.cells[14][11].directions.down = false;
+						kimagure.router.cells[14][12].directions.right = true;
+						kimagure.router.cells[14][12].directions.down = false;
+						kimagure.router.cells[14][13].directions.right = false;
+						kimagure.router.cells[14][13].directions.down = false;
 
 						if (kimagure.nextCells.length && (kimagure.nextCells[kimagure.actStep].row <= 12 || kimagure.nextCells[kimagure.actStep].row >= 16)){
 							kimagure.inCage = false;
@@ -641,12 +641,12 @@ var ghosts = (function(){
 				if (( (actLevel == 1 || actLevel == 2) && dotsEaten >= 80) || actLevel >= 3){
 					var otoboke = _getGhostByName('otoboke');
 					if (otoboke.inCage && !otoboke.eaten){
-						otoboke.router.cells[13][16].directions.left = true;
-						otoboke.router.cells[13][16].directions.down = false;
-						otoboke.router.cells[13][15].directions.left = true;
-						otoboke.router.cells[13][15].directions.down = false;
-						otoboke.router.cells[13][14].directions.left = false;
-						otoboke.router.cells[13][14].directions.down = false;
+						otoboke.router.cells[14][16].directions.left = true;
+						otoboke.router.cells[14][16].directions.down = false;
+						otoboke.router.cells[14][15].directions.left = true;
+						otoboke.router.cells[14][15].directions.down = false;
+						otoboke.router.cells[14][14].directions.left = false;
+						otoboke.router.cells[14][14].directions.down = false;
 
 						if (otoboke.nextCells.length && (otoboke.nextCells[otoboke.actStep].row <= 12 || otoboke.nextCells[otoboke.actStep].row >= 16)){
 							otoboke.inCage = false;
