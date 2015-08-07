@@ -4,115 +4,7 @@
 		<meta charset="utf-8">
 		<title>cpm</title>
 		<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport'>
-
-		<style>
-			*{
-				margin: 0;
-				padding: 0;
-
-				-webkit-box-sizing: border-box;
-				-moz-box-sizing: border-box;
-				-o-box-sizing: border-box;
-				-ms-box-sizing: border-box;
-				box-sizing: border-box;
-			}
-
-			html, body{
-				width : 100%;
-				height: 100%;
-				overflow: hidden;
-			}
-
-			body{
-				padding: 10px 0 0 0;
-				background: #000;
-
-				font: 12px sans, sans-serif;
-			}
-
-			p{
-				color: #8f8c8c;
-				margin: 5px 0;
-			}
-
-			a:link, a:visited, a:active{
-				color: #2121ff;
-			}
-
-			a:hover{
-				text-decoration: none;
-			}
-
-			#gameContainer{
-				-webkit-perspective: 800px;
-				-moz-perspective: 800px;
-				-o-perspective: 800px;
-				-ms-perspective: 800px;
-				perspective: 800px;
-			}
-
-			#game{
-				height: 452px;
-				margin-bottom: 40px;
-
-				-webkit-transition: -webkit-transform .5s;
-				-moz-transition: -moz-transform .5s;
-				-o-transition: -o-transform .5s;
-				-ms-transition: -ms-transform .5s;
-				transition: transform .5s;
-				-webkit-transform-style: preserve-3d;
-				-moz-transform-style: preserve-3d;
-				-o-transform-style: preserve-3d;
-				-ms-transform-style: preserve-3d;
-				transform-style: preserve-3d;
-   			}
-
-
-			.flip{
-				-webkit-transform: rotateY(-180deg);
-				-moz-transform: rotateY(-180deg);
-				-o-transform: rotateY(-180deg);
-				-ms-transform: rotateY(-180deg);
-				transform: rotateY(-180deg);
-			}
-
-				/*fix webkit z-index *problem* on windows*/
-				@media screen and (-webkit-min-device-pixel-ratio : 0){
-					.flip #layoutCanvas{
-						z-index: 6 !important;
-					}
-
-					.flip #gameCanvas{
-						z-index: 5 !important;
-					}
-				}
-
-			.info{
-				position: fixed;
-				left: 50%;
-				bottom: 0;
-				width: 100%;
-				max-width: 100%;
-				margin-left: -160px;
-				padding-left: 5px;
-			}
-
-			@media screen and (min-width: 437px) and (min-height: 640px){
-				#gameContainer{
-					-webkit-transform: scale(1.3, 1.3);
-					-moz-transform: scale(1.3, 1.3);
-					-o-transform: scale(1.3, 1.3);
-					-ms-transform: scale(1.3, 1.3);
-					transform: scale(1.3, 1.3);
-
-					-webkit-transform-origin: top center;
-					-moz-transform-origin: top center;
-					-o-transform-origin: top center;
-					-ms-transform-origin: top center;
-					transform-origin: top center;
-				}
-			}
-		</style>
+		<link rel="stylesheet" media="screen" href="assets/css/cpm.css">
 	</head>
 	<body>
 		<div id="gameContainer">
@@ -124,18 +16,18 @@
 			<p>PAC-MAN&#8482; &amp; &copy;1980 NAMCO BANDAI Games Inc.</p>
 		</div>
 
-		<script src="assets/js/assets.js"></script>
-		<script src="assets/js/error.js"></script>
-		<script src="assets/js/layouts.js"></script>
-		<script src="assets/js/levels.js"></script>
-		<script src="assets/js/imageloader.js"></script>
-		<script src="assets/js/renderer.js"></script>
-		<script src="assets/js/entity.js"></script>
-		<script src="assets/js/ghosts.js"></script>
-		<script src="assets/js/pathfinder.js"></script>
-		<script src="assets/js/sounds.js"></script>
-		<script src="assets/js/cutscenes.js"></script>
-		<script src="assets/js/game.js"></script>
+		<script src="assets/js/assets.js?d=20150807"></script>
+		<script src="assets/js/error.js?d=20150807"></script>
+		<script src="assets/js/layouts.js?d=20150807"></script>
+		<script src="assets/js/levels.js?d=20150807"></script>
+		<script src="assets/js/imageloader.js?d=20150807"></script>
+		<script src="assets/js/renderer.js?d=20150807"></script>
+		<script src="assets/js/entity.js?d=20150807"></script>
+		<script src="assets/js/ghosts.js?d=20150807"></script>
+		<script src="assets/js/pathfinder.js?d=20150807"></script>
+		<script src="assets/js/sounds.js?d=20150807"></script>
+		<script src="assets/js/cutscenes.js?d=20150807"></script>
+		<script src="assets/js/game.js?d=20150807"></script>
 
 		<script type="text/javascript">
 			document.addEventListener("DOMContentLoaded", function(event){
