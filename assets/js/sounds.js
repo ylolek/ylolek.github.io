@@ -189,26 +189,36 @@ var sounds = (function(){
 		},
 
 		pause : function(){
+			if (sfxOff) return false;
+
 			sfxPaused = true;
 			sfxCtrl.pause();
 		},
 
 		pauseBg : function(){
+			if (sfxOff) return false;
+
 			sfxBgPaused = true;
 			bgLoopSfx.pause();
 		},
 
 		resume : function(){
+			if (sfxOff) return false;
+
 			sfxPaused = false;
 			if (curPlaying.name.length) sfxCtrl.play();
 		},
 
 		resumeBg : function(){
+			if (sfxOff) return false;
+
 			sfxBgPaused = false;
 			if (curPlayingBg.name.length) bgLoopSfx.play();
 		},
 
 		resetSfx : function(){
+			if (sfxOff) return false;
+
 			sfxCtrl.pause();
 			sfxCtrl.currentTime = 0;
 			sfxPaused = false;
@@ -220,6 +230,8 @@ var sounds = (function(){
 		},
 
 		resetBgSfx : function(){
+			if (sfxOff) return false;
+
 			bgLoopSfx.pause();
 			bgLoopSfx.currentTime = 0;
 			sfxBgPaused = false;
