@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>trig</title>
+
+		<style>
+			*{
+				margin : 0;
+				padding: 0;
+			}
+
+			canvas{
+				display: block;
+			}
+		</style>
+	</head>
+	<body>
+		<script type="text/javascript">
+			document.addEventListener("DOMContentLoaded", function(event){
+				var canvas = document.createElement('canvas');
+				document.body.appendChild(canvas);
+
+				var context = canvas.getContext('2d');
+				var width = canvas.width = window.innerWidth;
+				var height = canvas.height = window.innerHeight;
+
+				var centerX = width / 2, centerY = height / 2;
+				var offsetX = 250, offsetY = 250;
+				var speedX = .01, speedY = .0123;
+				var angleX = 0, angleY = 0;
+				var rotAngle = 0;
+				var ease = .01;
+				var toX = centerX, toY = centerY, cX = centerX, cY = centerY;
+
+				var mousePos = {
+					x : centerX,
+					y : centerY
+				}
+
+				var lastPos = {
+					x : centerX,
+					y : centerY
+				}
+
+				document.addEventListener('mousemove', function(event){
+					mousePos.x = event.clientX;
+					mousePos.y = event.clientY;
+				});
+
+				function render(){
+					/*var x = centerX + Math.cos(angleX) * offsetX;
+					var y = centerY + Math.sin(angleY) * offsetY;*/
+
+					cX += (mousePos.x - lastPos.x) * ease;
+					cY += (mousePos.y - lastPos.y) * ease;
+					toX = cX + Math.cos(angleX) * offsetX;
+					toY = cY + Math.sin(angleY) * offsetY;
+
+					context.clearRect(0, 0, width, height);
+
+					context.save();
+
+					context.translate(toX, toY);
+					context.rotate(rotAngle);
+
+					context.beginPath();
+					context.moveTo(0, -10);
+					context.lineTo(10, 0);
+
+					context.moveTo(0, 10);
+					context.lineTo(10, 0);
+
+					context.moveTo(30, 0);
+					context.lineTo(0, -10);
+
+					context.moveTo(30, 0);
+					context.lineTo(0, 10);
+					context.stroke();
+
+
+					var dX = mousePos.x - toX;
+					var dY = mousePos.y - toY;
+					var dist = Math.sqrt(dX * dX + dY * dY);
+
+					if (dist <= 100){
+						context.rotate(-1 * rotAngle);
+						context.font = '15px sans, sans-serif, arial';
+
+						if (dist <= 100 && dist > 30){
+							context.strokeText('ó, helloszia!', -10, -30);
+						}
+
+						if (dist <= 30){
+							context.strokeText('bocsánat, elnézést!', -10, -30);
+						}
+					}
+
+					context.restore();
+
+					lastPos.x = toX;
+					lastPos.y = toY;
+					angleX += speedX;
+					angleY += speedY;
+					rotAngle = Math.atan2(mousePos.y - toY, mousePos.x - toX);
+
+					requestAnimationFrame(render);
+				}
+
+				render();
+			});
+		</script>
+	</body>
+</html>
