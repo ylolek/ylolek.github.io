@@ -44,6 +44,13 @@
 					y : centerY
 				}
 
+				if ('ontouchmove' in window){
+					window.addEventListener('touchmove', function(event){
+						mousePos.x = event.touches[0].clientX;
+						mousePos.y = event.touches[0].clientY;
+					});
+				}
+
 				window.addEventListener('resize', function(event){
 					width = canvas.width = window.innerWidth;
 					height = canvas.height = window.innerHeight;
@@ -51,7 +58,6 @@
 					centerX = width / 2;
 					centerY = height / 2;
 				});
-
 
 				document.addEventListener('mousemove', function(event){
 					mousePos.x = event.clientX;
