@@ -1,8 +1,8 @@
-
 <!DOCTYPE html>
 <html>
 	<head>
 		<meta charset="utf-8">
+		<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport'>
 		<title>trig</title>
 
 		<style>
@@ -43,6 +43,15 @@
 					x : centerX,
 					y : centerY
 				}
+
+				window.addEventListener('resize', function(event){
+					width = canvas.width = window.innerWidth;
+					height = canvas.height = window.innerHeight;
+
+					centerX = width / 2;
+					centerY = height / 2;
+				});
+
 
 				document.addEventListener('mousemove', function(event){
 					mousePos.x = event.clientX;
