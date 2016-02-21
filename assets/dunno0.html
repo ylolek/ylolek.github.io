@@ -146,14 +146,7 @@
 						if (dist <= 100){
 							context.rotate(-1 * thing.rotAngle);
 							context.font = '15px sans, sans-serif, arial';
-
-							if (dist <= 100 && dist > 30){
-								context.strokeText('ó, helloszia!', -10, -30);
-							}
-
-							if (dist <= 30){
-								context.strokeText('pacsi!', -10, -30);
-							}
+							context.strokeText(dist > 30 ? 'ó, helloszia!' : 'pacsi!', -10, -30);
 						}
 
 						context.restore();
