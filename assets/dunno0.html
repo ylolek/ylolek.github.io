@@ -11,12 +11,38 @@
 				padding: 0;
 			}
 
+			body{
+				font: 100% sans, sans-serif;
+			}
+
 			canvas{
 				display: block;
+			}
+
+			a:link, a:active, a:visited{
+				display: block;
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				margin: -20px 0 0 -50px;
+
+				width: 100px;
+				line-height: 40px;
+
+				color: #fff;
+				text-decoration: none;
+				text-align: center;
+
+				background: #6D7578;
+			}
+
+			a:hover{
+				background: #769BAB;
 			}
 		</style>
 	</head>
 	<body>
+		<a href="#" id="hallo">Hallo!</a>
 		<script type="text/javascript">
 			document.addEventListener("DOMContentLoaded", function(event){
 				var canvas = document.createElement('canvas');
@@ -27,19 +53,8 @@
 				var height = canvas.height = window.innerHeight;
 
 				var centerX = width / 2, centerY = height / 2;
-				var offsetX = 250, offsetY = 250;
-				var speedX = .01, speedY = .0123;
-				var angleX = 0, angleY = 0;
-				var rotAngle = 0;
-				var ease = .01;
-				var toX = centerX, toY = centerY, cX = centerX, cY = centerY;
-
+				var things = [];
 				var mousePos = {
-					x : centerX,
-					y : centerY
-				}
-
-				var lastPos = {
 					x : centerX,
 					y : centerY
 				}
@@ -64,65 +79,97 @@
 					mousePos.y = event.clientY;
 				});
 
+				document.getElementById('hallo').addEventListener('click', function(event){
+					genThings(Math.round(Math.random() * 20) + 20)
+					this.style = 'display: none;';
+				});
+
+				function genThings(num){
+					var slice = 2 * Math.PI / num;
+
+					for (var i = 0; i < num; i++){
+						things.push({
+							offsetX : Math.round(Math.random() * 400) + 250,
+							offsetY : Math.round(Math.random() * 400) + 250,
+							speedX : Math.random() * .01 /*.01*/,
+							speedY : Math.random() * .0123 /*.0123*/,
+							angleX : i * slice,
+							angleY : i * slice,
+							rotAngle : 0,
+							ease : .01,
+							toX : centerX,
+							toY : centerY,
+							cX : centerX,
+							cY : centerY,
+							color : '#' + Math.floor(Math.random() * 15658734).toString(16),
+							lastPos : {
+								x : centerX,
+								y : centerY
+							}
+						});
+					}
+				}
+
 				function render(){
-					/*var x = centerX + Math.cos(angleX) * offsetX;
-					var y = centerY + Math.sin(angleY) * offsetY;*/
-
-					cX += (mousePos.x - lastPos.x) * ease;
-					cY += (mousePos.y - lastPos.y) * ease;
-					toX = cX + Math.cos(angleX) * offsetX;
-					toY = cY + Math.sin(angleY) * offsetY;
-
 					context.clearRect(0, 0, width, height);
 
-					context.save();
+					things.forEach(function(thing){
+						thing.cX += (mousePos.x - thing.lastPos.x) * thing.ease;
+						thing.cY += (mousePos.y - thing.lastPos.y) * thing.ease;
+						thing.toX = thing.cX + Math.cos(thing.angleX) * thing.offsetX;
+						thing.toY = thing.cY + Math.sin(thing.angleY) * thing.offsetY;
 
-					context.translate(toX, toY);
-					context.rotate(rotAngle);
+						context.save();
 
-					context.beginPath();
-					context.moveTo(0, -10);
-					context.lineTo(10, 0);
+						context.translate(thing.toX, thing.toY);
+						context.rotate(thing.rotAngle);
 
-					context.moveTo(0, 10);
-					context.lineTo(10, 0);
+						context.beginPath();
+						context.moveTo(0, -10);
+						context.lineTo(10, 0);
 
-					context.moveTo(30, 0);
-					context.lineTo(0, -10);
+						context.moveTo(0, 10);
+						context.lineTo(10, 0);
 
-					context.moveTo(30, 0);
-					context.lineTo(0, 10);
-					context.stroke();
+						context.moveTo(30, 0);
+						context.lineTo(0, -10);
 
+						context.moveTo(30, 0);
+						context.lineTo(0, 10);
+						context.strokeStyle = thing.color;
+						context.stroke();
 
-					var dX = mousePos.x - toX;
-					var dY = mousePos.y - toY;
-					var dist = Math.sqrt(dX * dX + dY * dY);
+						var dX = mousePos.x - thing.toX;
+						var dY = mousePos.y - thing.toY;
+						var dist = Math.sqrt(dX * dX + dY * dY);
 
-					if (dist <= 100){
-						context.rotate(-1 * rotAngle);
-						context.font = '15px sans, sans-serif, arial';
+						if (dist <= 100){
+							context.rotate(-1 * thing.rotAngle);
+							context.font = '15px sans, sans-serif, arial';
 
-						if (dist <= 100 && dist > 30){
-							context.strokeText('ó, helloszia!', -10, -30);
+							if (dist <= 100 && dist > 30){
+								context.strokeText('ó, helloszia!', -10, -30);
+							}
+
+							if (dist <= 30){
+								context.strokeText('bocsánat, elnézést!', -10, -30);
+							}
 						}
 
-						if (dist <= 30){
-							context.strokeText('bocsánat, elnézést!', -10, -30);
-						}
-					}
+						context.restore();
 
-					context.restore();
+						thing.lastPos.x = thing.toX;
+						thing.lastPos.y = thing.toY;
+						thing.angleX += thing.speedX;
+						thing.angleY += thing.speedY;
+						thing.rotAngle = Math.atan2(mousePos.y - thing.toY, mousePos.x - thing.toX);
 
-					lastPos.x = toX;
-					lastPos.y = toY;
-					angleX += speedX;
-					angleY += speedY;
-					rotAngle = Math.atan2(mousePos.y - toY, mousePos.x - toX);
+					});
 
 					requestAnimationFrame(render);
 				}
 
+				genThings(1);
 				render();
 			});
 		</script>
