@@ -91,8 +91,8 @@
 						things.push({
 							offsetX : Math.round(Math.random() * 400) + 250,
 							offsetY : Math.round(Math.random() * 400) + 250,
-							speedX : Math.random() * .01 /*.01*/,
-							speedY : Math.random() * .0123 /*.0123*/,
+							speedX : Math.random() * .004 + .006 /*.01*/,
+							speedY : Math.random() * .0063 + .006 /*.0123*/,
 							angleX : i * slice,
 							angleY : i * slice,
 							rotAngle : 0,
@@ -146,6 +146,7 @@
 						if (dist <= 100){
 							context.rotate(-1 * thing.rotAngle);
 							context.font = '15px sans, sans-serif, arial';
+
 							context.strokeText(dist > 30 ? 'ó, helloszia!' : 'pacsi!', -10, -30);
 						}
 
