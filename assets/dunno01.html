@@ -59,7 +59,7 @@
 					gameImgSrc : 'img/dimg.png',
 					circSR : [220, 120, 50],
 					minR : 50,
-					maxR : 900,
+					maxR : Math.max(width, height),
 					rIncrement : .04,
 					circCols : ['#000', '#fff'],
 					circColIndex : 0,
@@ -127,6 +127,7 @@
 					height = canvas.height = Math.min(800, window.innerHeight);
 					centerX = width / 2;
 					centerY = height / 2;
+					props.maxR = Math.max(width, height);
 
 					props.circs.forEach(function(circ){
 						circ.cX = centerX;
