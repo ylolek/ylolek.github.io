@@ -1,0 +1,572 @@
+<!--
+	original graphics
+	=================
+	planet, saucer: http://www.freepik.com/free-vector/outer-space_799423.htm#term=ufo&page=1&position=11
+	lamb: http://www.vecteezy.com/vector-art/85742-sheep-silhouette-vectors-pack
+-->
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport'>
+		<title>alukáljál</title>
+
+		<style>
+			*{
+				margin : 0;
+				padding: 0;
+			}
+
+			html, body{
+				width: 100%;
+				height: 100%;
+				overflow: hidden;
+			}
+
+			body{
+				font: 100% sans, sans-serif;
+				background: #000;
+			}
+
+			canvas{
+				display: block;
+				margin: 0 auto;
+			}
+
+		</style>
+	</head>
+	<body>
+		<script type="text/javascript">
+			document.addEventListener("DOMContentLoaded", function(event){
+				var canvas = document.createElement('canvas');
+				document.body.appendChild(canvas);
+
+				var context = canvas.getContext('2d');
+				var width = canvas.width = Math.min(800, window.innerWidth);
+				var height = canvas.height = Math.min(800, window.innerHeight);
+				var centerX = width / 2;
+				var centerY = height / 2;
+
+				var aF, ZID, LID, WID0, WID1, RID, RID1;
+
+				var props = {
+					pause : false,
+					canReact : true,
+					isTouchDev : 'ontouchstart' in window,
+					lastTime : performance.now() || Date.now(),
+					deltaT : 0,
+					gameImg : new Image(),
+					gameImgSrc : 'img/dimg.png',
+					circSR : [220, 120, 50],
+					minR : 50,
+					maxR : 900,
+					rIncrement : .04,
+					circCols : ['#000', '#fff'],
+					circColIndex : 0,
+					circs : [],
+					tries : 0,
+					sheepsWoke : 0,
+					ctrlMsg : 'SPACE',
+					player : {
+						x : 0,
+						y : 0,
+						angle : -75 * Math.PI / 180,
+						light : false,
+						clip : {
+							pos : [{
+								x : 61,
+								y : 0
+							},{
+								x : 130,
+								y : 0
+							}],
+							width : 69,
+							height : 40
+						}
+					},
+					planet : {
+						x : centerX,
+						y : centerY,
+						angle : 0,
+						rotSpeed : .2,
+						clip : {
+							pos : [{
+								x : 61,
+								y : 40
+							},{
+								x : 666,
+								y : 40
+							}],
+							width : 605,
+							height : 600
+						}
+					},
+					sheeps : {
+						theSheeps : [],
+						sheepNum : Math.round(Math.random() * 15) + 5,
+						lastNum : 0,
+						angle : 0,
+						spreadAngle : 270 * Math.PI / 180,
+						rotSpeed : 1,
+						clip : {
+							pos : [{
+								x : 0,
+								y : 0
+							},{
+								x : 30,
+								y : 0
+							}],
+							width : 30,
+							height : 20
+						}
+					}
+				}
+
+				function resize(){
+					width = canvas.width = Math.min(800, window.innerWidth);
+					height = canvas.height = Math.min(800, window.innerHeight);
+					centerX = width / 2;
+					centerY = height / 2;
+
+					props.circs.forEach(function(circ){
+						circ.cX = centerX;
+						circ.cY = centerY;
+						circ.sX = centerX;
+						circ.sY = centerY;
+						circ.toX = centerX;
+						circ.toY = centerY;
+					});
+				}
+
+				function lightOn(){
+					props.ctrlMsg = '';
+					if (props.tries > 0){
+						if (props.canReact){
+							props.tries--;
+							props.player.light = true;
+							props.canReact = false;
+						}
+
+						window.clearTimeout(RID);
+						RID = window.setTimeout(function(){
+							props.player.light = false;
+						}, 200);
+					} else{
+						props.player.light = false;
+						window.clearTimeout(RID);
+					}
+				}
+
+				function lightOff(){
+					if (props.tries > 0){
+						props.player.light = false;
+						props.canReact = true;
+					}
+				}
+
+				function infIncr(){
+					props.rIncrement = Math.random() * .46 + .04;
+				}
+
+				function nextRound(){
+					props.canReact = true;
+					props.circs.forEach(function(circ){
+						circ.speedX = 10;
+						circ.speedY = 20;
+					});
+
+					WID0 = window.setTimeout(function(){
+						window.clearTimeout(WID0);
+						genSheeps();
+					}, 1000);
+
+
+					WID1 = window.setTimeout(function(){
+						window.clearTimeout(WID1);
+
+						props.circs.forEach(function(circ){
+							circ.speedX = circ.oriSX;
+							circ.speedY = circ.oriSY;
+						});
+					}, 1000);
+				}
+
+				function drawCirc(x, y, r, color, fill, startAngle, endAngle){
+					var startA = !startAngle ? 0 : startAngle;
+					var endA = !endAngle ? 2 * Math.PI : endAngle;
+					context.beginPath();
+					context.arc(x, y, r, startA, endA, true);
+					if (fill){
+						context.fillStyle = color;
+						context.fill();
+					} else{
+						context.strokeStyle = color;
+						context.lineWidth = 1;
+						context.stroke();
+					}
+				}
+
+				function drawPlayGround(){
+					props.circSR.forEach(function(cSR){
+						props.circColIndex = props.circColIndex >= props.circCols.length - 1 ? 0 : props.circColIndex + 1;
+						props.circs.push({
+							r : cSR,
+							colorIndex : props.circColIndex,
+							offsetX : Math.round(Math.random() * 5) + 5,
+							offsetY : Math.round(Math.random() * 5) + 5,
+							speedX : Math.random() * 1.5 + 1,
+							speedY : Math.random() * 1.56 + 1.2,
+							oriSX : Math.random() * 1.5 + 1,
+							oriSY : Math.random() * 1.56 + 1.2,
+							ease : .01,
+							toX : centerX,
+							toY : centerY,
+							cX : centerX,
+							cY : centerY,
+							sX : centerX,
+							sY : centerY,
+							angleX : 0,
+							angleY : 0,
+							lastPos : {
+								x : centerX,
+								y : centerY
+							}
+						});
+
+						//drawCirc(centerX, centerY, cSR, props.circCols[props.circColIndex], true);
+					});
+				}
+
+				function genSheeps(){
+					props.sheepsWoke = 0;
+					props.sheeps.theSheeps = [];
+
+					var toDeg = Math.random() * 225 + 45;
+					var degPerc = toDeg / 270 * 100;
+					var sheepNum = Math.round(20 * degPerc / 100);
+
+					props.sheeps.angle = 0;
+					props.sheeps.spreadAngle = toDeg * Math.PI / 180;
+					props.sheeps.sheepNum = sheepNum;
+					props.tries = sheepNum + 1;
+
+					for (var i = 0; i < sheepNum; i++){
+						props.sheeps.theSheeps.push({
+							offsetX : 0,
+							offsetY : 0,
+							speedX : 0,
+							speedY : 0,
+							ease : .01,
+							toX : centerX,
+							toY : centerY,
+							cX : centerX,
+							cY : centerY,
+							sX : centerX,
+							sY : centerY,
+							angleX : 0,
+							angleY : 0,
+							lastPos : {
+								x : centerX,
+								y : centerY
+							},
+							clip : {
+								pos : props.sheeps.clip.pos,
+								width : props.sheeps.clip.width,
+								height : props.sheeps.clip.height,
+							},
+							woke : false,
+							msg : ''
+						});
+					}
+				}
+
+				function render(DOMHighResTimeStamp){
+					var now = DOMHighResTimeStamp || performance.now() || Date.now();
+					props.deltaT = Math.max(0, (now - props.lastTime) / 1000);
+
+					if (!props.pause){
+						context.clearRect(0, 0, width, height);
+
+						//remove circle out of the canvas
+						if (props.circs[0].r >= props.maxR){
+							props.circs.splice(0, 1);
+						}
+
+						//add new circle
+						if (props.circs[props.circs.length - 1].r >= 60){
+							props.circColIndex = props.circColIndex >= props.circCols.length - 1 ? 0 : props.circColIndex + 1;
+							props.circs.push({
+								r : .1,
+								colorIndex : props.circColIndex,
+								offsetX : Math.round(Math.random() * 5) + 5,
+								offsetY : Math.round(Math.random() * 5) + 5,
+								speedX : Math.random() * 1.5 + 1,
+								speedY : Math.random() * 1.56 + 1.2,
+								oriSX : Math.random() * 1.5 + 1,
+								oriSY : Math.random() * 1.56 + 1.2,
+								ease : .01,
+								toX : centerX,
+								toY : centerY,
+								cX : centerX,
+								cY : centerY,
+								sX : centerX,
+								sY : centerY,
+								angleX : 0,
+								angleY : 0,
+								lastPos : {
+									x : centerX,
+									y : centerY
+								}
+							});
+						}
+
+						props.circs.forEach(function(circ, cIndex){
+							//circ.r += props.rIncrement;
+							circ.r += (props.circs.length - cIndex) * props.rIncrement;
+
+							circ.cX += (circ.sX - circ.lastPos.x) * circ.ease;
+							circ.cY += (circ.sY - circ.lastPos.y) * circ.ease;
+							circ.toX = circ.cX + Math.cos(circ.angleX) * circ.offsetX;
+							circ.toY = circ.cY + Math.sin(circ.angleY) * circ.offsetY;
+							//drawCirc(circ.toX, circ.toY, circ.r, props.circCols[circ.colorIndex], true);
+
+							var pDistR = circ.r + (circ.r * 40 / 100);
+							drawCirc(circ.toX, circ.toY, pDistR, props.circCols[circ.colorIndex]);
+
+							var toBigestPerc = props.circs[cIndex].r / props.circSR[0] * 100
+
+							//sheeps
+							var slice = props.sheeps.spreadAngle / props.sheeps.sheepNum;
+							var toDist = circ.r + (circ.r * 10 / 100);
+							props.sheeps.theSheeps.forEach(function(sheep, sIndex){
+								var scaleW = sheep.clip.width * toBigestPerc / 100;
+								var scaleH = sheep.clip.height * toBigestPerc / 100;
+
+								var dimPerc = circ.r / props.circs[cIndex].r * 100;
+								var toW = scaleW * dimPerc / 100;
+								var toH = scaleH * dimPerc / 100;
+
+								var toX = (circ.toX + Math.cos(sIndex * slice + props.sheeps.angle) * toDist) - toW / 2;
+								var toY = (circ.toY + Math.sin(sIndex * slice + props.sheeps.angle) * toDist) - toH / 2;
+
+								sheep.sX = sheep.cX = toX;
+								sheep.sY = sheep.cY = toY;
+								sheep.offsetY = (pDistR - toDist) / 4;
+
+								sheep.cX += (sheep.sX - sheep.lastPos.x) * sheep.ease;
+								sheep.cY += (sheep.sY - sheep.lastPos.y) * sheep.ease;
+								sheep.toX = sheep.cX + Math.cos(sheep.angleX) * sheep.offsetX;
+								sheep.toY = sheep.cY + Math.sin(sheep.angleY) * sheep.offsetY;
+
+								var rotAngle = Math.atan2(circ.toY - toY, circ.toX - toX) - 90 * Math.PI / 180;
+								context.save();
+								context.translate(sheep.toX + toW / 2, sheep.toY + toH / 2);
+								context.rotate(rotAngle);
+								context.drawImage(props.gameImg, props.sheeps.clip.pos[circ.colorIndex].x, props.sheeps.clip.pos[circ.colorIndex].y, props.sheeps.clip.width, props.sheeps.clip.height, -1 * toW / 2, -1 * toH / 2, toW, toH);
+
+								if (sheep.msg.length){
+									var fSize = 15 * toBigestPerc / 100;
+									context.font = fSize + 'px sans, sans-serif';
+									context.fillStyle = props.circCols[circ.colorIndex];
+									context.fillText(sheep.msg, -1 * toW, -1 * toH);
+								}
+
+								//if (!sheep.msg) drawCirc(0, 0, toH / 1.2, props.circCols[circ.colorIndex]);
+								context.restore();
+
+								sheep.lastPos.x = sheep.toX;
+								sheep.lastPos.y = sheep.toY;
+								sheep.angleX += sheep.speedX * props.deltaT;
+								sheep.angleY += sheep.speedY * props.deltaT;
+
+								//hide sheep msg
+								var msgEndX = circ.toX + Math.cos(Math.PI / 180) * toDist;
+								var msgEndY = circ.toY + Math.sin(Math.PI / 180) * toDist;
+								//drawCirc(msgEndX, msgEndY, 10, props.circCols[circ.colorIndex], true);
+								if (sheep.woke && sheep.sY >= msgEndY){
+									sheep.msg = '';
+								}
+
+							});
+
+							//planet
+							var scaleW = props.planet.clip.width / 1.4 * toBigestPerc / 100;
+							var scaleH = props.planet.clip.height / 1.4 * toBigestPerc / 100;
+
+							var dimPerc = circ.r / props.circs[cIndex].r * 100;
+							var toW = scaleW * dimPerc / 100;
+							var toH = scaleH * dimPerc / 100;
+
+							props.planet.x = circ.toX - toW / 2;
+							props.planet.y = circ.toY - toH / 2;
+
+							context.save();
+							context.translate(props.planet.x + toW / 2, props.planet.y + toH / 2);
+							context.rotate(props.planet.angle);
+							context.drawImage(props.gameImg, props.planet.clip.pos[circ.colorIndex].x, props.planet.clip.pos[circ.colorIndex].y, props.planet.clip.width, props.planet.clip.height, -1 * toW / 2, -1 * toH / 2, toW, toH);
+							context.restore();
+
+							//player
+							var scaleW = props.player.clip.width * toBigestPerc / 100;
+							var scaleH = props.player.clip.height * toBigestPerc / 100;
+
+							var dimPerc = circ.r / props.circs[cIndex].r * 100;
+							var toW = scaleW * dimPerc / 100;
+							var toH = scaleH * dimPerc / 100;
+
+							props.player.x = (circ.toX + Math.cos(props.player.angle) * pDistR) - toW / 2;
+							props.player.y = (circ.toY + Math.sin(props.player.angle) * pDistR) - toH / 1.8;
+
+							context.drawImage(props.gameImg, props.player.clip.pos[circ.colorIndex].x, props.player.clip.pos[circ.colorIndex].y, props.player.clip.width, props.player.clip.height, props.player.x, props.player.y, toW, toH);
+
+
+							if (props.player.light){
+								var lightTo = {
+									x1 : 0,
+									x2 : 0
+								}
+								context.beginPath();
+								var toX = props.player.x + toW / 2.6;
+								var toY = props.player.y + toH - toH / 4.6;
+								context.moveTo(toX, toY);
+								var lToX = circ.toX + Math.cos(-80 * Math.PI / 180) * (circ.r - circ.r / 22);
+								var lToY = circ.toY + Math.sin(-80 * Math.PI / 180) * (circ.r - circ.r / 22);
+								context.lineTo(lToX, lToY);
+								lightTo.x1 = lToX;
+
+								var toX = props.player.x + toW / 1.8;
+								context.lineTo(toX, toY);
+
+								context.moveTo(toX, toY);
+								var lToX = circ.toX + Math.cos(-70 * Math.PI / 180) * (circ.r - circ.r / 22);
+								var lToY = circ.toY + Math.sin(-70 * Math.PI / 180) * (circ.r - circ.r / 22);
+								context.lineTo(lToX, lToY);
+								lightTo.x2 = lToX;
+
+								var lToX = circ.toX + Math.cos(-80 * Math.PI / 180) * (circ.r - circ.r / 22);
+								var lToY = circ.toY + Math.sin(-80 * Math.PI / 180) * (circ.r - circ.r / 22);
+								context.lineTo(lToX, lToY);
+
+								context.closePath();
+
+
+								context.fillStyle = props.circCols[circ.colorIndex];
+								context.fill();
+
+								//check sheeps
+								props.sheeps.theSheeps.some(function(sheep){
+									if (sheep.toX > lightTo.x1 && sheep.toX + sheep.clip.width / 2 < lightTo.x2 && sheep.toY < circ.toY - circ.r){
+										if (!sheep.woke) props.sheepsWoke ++;
+										sheep.woke = true;
+										sheep.speedY = Math.random() * .56 + 1;
+										sheep.msg = 'alukáljál';
+									}
+								});
+							}
+
+
+							circ.lastPos.x = circ.toX;
+							circ.lastPos.y = circ.toY;
+							circ.angleX += circ.speedX * props.deltaT;
+							circ.angleY += circ.speedY * props.deltaT;
+						});
+
+
+						//rotate planet
+						props.planet.angle -= props.planet.rotSpeed * props.deltaT;
+
+						//rotate sheeps
+						props.sheeps.angle += props.sheeps.rotSpeed * props.deltaT;
+
+						context.font = 'bold 15px sans, sans-serif';
+						context.fillStyle = 'green';
+						context.fillText('Bárányok: ' +  props.sheepsWoke + '/' + props.sheeps.sheepNum, 10, 20);
+						context.fillText('Ébresztő: ' + props.tries, 10, 40);
+
+						if (props.ctrlMsg.length){
+							if (props.isTouchDev){
+								drawCirc(40, 80, 30, 'green', true);
+								context.fillStyle = 'white';
+								context.fillText('BÖKJ', 20, 85);
+							}else{
+								context.fillStyle = 'green';
+								context.fillRect(10, 50, 100, 30);
+								context.fillStyle = 'white';
+								context.fillText(props.ctrlMsg, 33, 71);
+							}
+						}
+					}
+
+					props.lastTime = now;
+					aF = requestAnimationFrame(render);
+				}
+
+
+				//load img
+				props.gameImg.addEventListener('load', function(){
+					window.addEventListener('blur', function(){
+						props.pause = true;
+
+						window.clearInterval(ZID);
+						window.clearInterval(LID);
+						window.clearTimeout(WID0);
+						window.clearTimeout(WID1);
+					});
+
+					window.addEventListener('focus', function(){
+						props.pause = false;
+
+						window.clearInterval(ZID);
+						window.clearInterval(LID);
+						window.clearTimeout(WID0);
+						window.clearTimeout(WID1);
+
+						nextRound();
+						ZID = window.setInterval(infIncr, Math.random() * 4000 + 4000);
+						LID = window.setInterval(nextRound, 6800);
+					});
+
+					window.addEventListener('resize', function(){
+						resize();
+					});
+
+
+					if (props.isTouchDev){
+						document.addEventListener('touchstart', function(event){
+							lightOn();
+						});
+
+						document.addEventListener('touchend', function(event){
+							lightOff();
+						});
+					}else{
+						window.addEventListener('keydown', function(event){
+							switch(event.keyCode){
+								case 32 : //space
+									lightOn();
+								break;
+							}
+						});
+
+						window.addEventListener('keyup', function(event){
+							switch(event.keyCode){
+								case 32 : //space
+									lightOff();
+								break;
+							}
+						});
+					}
+
+					drawPlayGround();
+					genSheeps();
+					render();
+
+					ZID = window.setInterval(infIncr, Math.random() * 4000 + 4000);
+					LID = window.setInterval(nextRound, 6800);
+				});
+
+				props.gameImg.src = props.gameImgSrc;
+			});
+		</script>
+	</body>
+</html>
