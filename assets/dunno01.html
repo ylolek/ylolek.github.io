@@ -48,7 +48,7 @@
 				var centerX = width / 2;
 				var centerY = height / 2;
 
-				var aF, ZID, LID, WID0, WID1, RID, RID1;
+				var aF, ZID, LID, WID0, WID1, RID, RID1, PID;
 
 				var props = {
 					pause : false,
@@ -67,6 +67,8 @@
 					tries : 0,
 					sheepsWoke : 0,
 					isPlaying : false,
+					idleT : 30000,
+					nextRT : 6000,
 					player : {
 						x : 0,
 						y : 0,
@@ -124,7 +126,9 @@
 
 				function lightOn(){
 					props.pause = false;
+					if (!props.isPlaying) doFocus();
 					props.isPlaying = true;
+					window.clearInterval(PID);
 
 					if (props.tries > 0){
 						if (props.canReact){
@@ -148,6 +152,9 @@
 						props.player.light = false;
 						props.canReact = true;
 					}
+
+					window.clearInterval(PID);
+					PID = window.setInterval(checkIdle, props.idleT);
 				}
 
 				function infIncr(){
@@ -273,6 +280,7 @@
 					window.clearInterval(LID);
 					window.clearTimeout(WID0);
 					window.clearTimeout(WID1);
+					window.clearInterval(PID);
 				}
 
 				function doFocus(){
@@ -282,10 +290,12 @@
 					window.clearInterval(LID);
 					window.clearTimeout(WID0);
 					window.clearTimeout(WID1);
+					window.clearInterval(PID);
 
 					nextRound();
 					ZID = window.setInterval(infIncr, Math.random() * 4000 + 4000);
-					LID = window.setInterval(nextRound, 6800);
+					LID = window.setInterval(nextRound, props.nextRT);
+					PID = window.setInterval(checkIdle, props.idleT);
 				}
 
 				function doResize(){
@@ -303,6 +313,13 @@
 						circ.toX = centerX;
 						circ.toY = centerY;
 					});
+				}
+
+				function checkIdle(){
+					if (!props.isPlaying){
+						doBlur();
+					}
+					props.isPlaying = false;
 				}
 
 				function render(DOMHighResTimeStamp){
@@ -559,7 +576,8 @@
 					render();
 
 					ZID = window.setInterval(infIncr, Math.random() * 4000 + 4000);
-					LID = window.setInterval(nextRound, 6800);
+					LID = window.setInterval(nextRound, props.nextRT);
+					PID = window.setInterval(checkIdle, props.idleT);
 				});
 
 				props.gameImg.src = props.gameImgSrc;
