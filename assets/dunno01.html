@@ -41,6 +41,7 @@
 				var canvas = document.createElement('canvas');
 				document.body.appendChild(canvas);
 
+				var isTouchDev = 'ontouchstart' in window;
 				var context = canvas.getContext('2d');
 				var width = canvas.width = Math.min(800, window.innerWidth);
 				var height = canvas.height = Math.min(800, window.innerHeight);
@@ -52,7 +53,6 @@
 				var props = {
 					pause : false,
 					canReact : true,
-					isTouchDev : 'ontouchstart' in window,
 					lastTime : performance.now() || Date.now(),
 					deltaT : 0,
 					gameImg : new Image(),
@@ -485,10 +485,10 @@
 						context.fillText('Ébresztő: ' + props.tries, 10, 40);
 
 						if (props.ctrlMsg.length){
-							if (props.isTouchDev){
+							if (isTouchDev){
 								drawCirc(40, 80, 30, 'green', true);
 								context.fillStyle = 'white';
-								context.fillText('BÖKJ', 20, 85);
+								context.fillText('BÖKJ', 18, 85);
 							}else{
 								context.fillStyle = 'green';
 								context.fillRect(10, 50, 100, 30);
@@ -532,7 +532,7 @@
 					});
 
 
-					if (props.isTouchDev){
+					if (isTouchDev){
 						document.addEventListener('touchstart', function(event){
 							lightOn();
 						});
