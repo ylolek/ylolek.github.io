@@ -66,7 +66,7 @@
 					circs : [],
 					tries : 0,
 					sheepsWoke : 0,
-					ctrlMsg : 'SPACE',
+					isPlaying : false,
 					player : {
 						x : 0,
 						y : 0,
@@ -122,25 +122,10 @@
 					}
 				}
 
-				function resize(){
-					width = canvas.width = Math.min(800, window.innerWidth);
-					height = canvas.height = Math.min(800, window.innerHeight);
-					centerX = width / 2;
-					centerY = height / 2;
-					props.maxR = Math.max(width, height);
-
-					props.circs.forEach(function(circ){
-						circ.cX = centerX;
-						circ.cY = centerY;
-						circ.sX = centerX;
-						circ.sY = centerY;
-						circ.toX = centerX;
-						circ.toY = centerY;
-					});
-				}
-
 				function lightOn(){
-					props.ctrlMsg = '';
+					props.pause = false;
+					props.isPlaying = true;
+
 					if (props.tries > 0){
 						if (props.canReact){
 							props.tries--;
@@ -279,6 +264,45 @@
 							msg : ''
 						});
 					}
+				}
+
+				function doBlur(){
+					props.pause = true;
+
+					window.clearInterval(ZID);
+					window.clearInterval(LID);
+					window.clearTimeout(WID0);
+					window.clearTimeout(WID1);
+				}
+
+				function doFocus(){
+					props.pause = false;
+
+					window.clearInterval(ZID);
+					window.clearInterval(LID);
+					window.clearTimeout(WID0);
+					window.clearTimeout(WID1);
+
+					nextRound();
+					ZID = window.setInterval(infIncr, Math.random() * 4000 + 4000);
+					LID = window.setInterval(nextRound, 6800);
+				}
+
+				function doResize(){
+					width = canvas.width = Math.min(800, window.innerWidth);
+					height = canvas.height = Math.min(800, window.innerHeight);
+					centerX = width / 2;
+					centerY = height / 2;
+					props.maxR = Math.max(width, height);
+
+					props.circs.forEach(function(circ){
+						circ.cX = centerX;
+						circ.cY = centerY;
+						circ.sX = centerX;
+						circ.sY = centerY;
+						circ.toX = centerX;
+						circ.toY = centerY;
+					});
 				}
 
 				function render(DOMHighResTimeStamp){
@@ -484,7 +508,7 @@
 						context.fillText('Bárány: ' +  props.sheepsWoke + '/' + props.sheeps.sheepNum, 10, 20);
 						context.fillText('Ébresztő: ' + props.tries, 10, 40);
 
-						if (props.ctrlMsg.length){
+						if (!props.isPlaying){
 							if (isTouchDev){
 								drawCirc(40, 80, 30, 'green', true);
 								context.fillStyle = 'white';
@@ -493,7 +517,7 @@
 								context.fillStyle = 'green';
 								context.fillRect(10, 50, 100, 30);
 								context.fillStyle = 'white';
-								context.fillText(props.ctrlMsg, 33, 71);
+								context.fillText('SPACE', 33, 71);
 							}
 						}
 					}
@@ -505,41 +529,13 @@
 
 				//load img
 				props.gameImg.addEventListener('load', function(){
-					window.addEventListener('blur', function(){
-						props.pause = true;
-
-						window.clearInterval(ZID);
-						window.clearInterval(LID);
-						window.clearTimeout(WID0);
-						window.clearTimeout(WID1);
-					});
-
-					window.addEventListener('focus', function(){
-						props.pause = false;
-
-						window.clearInterval(ZID);
-						window.clearInterval(LID);
-						window.clearTimeout(WID0);
-						window.clearTimeout(WID1);
-
-						nextRound();
-						ZID = window.setInterval(infIncr, Math.random() * 4000 + 4000);
-						LID = window.setInterval(nextRound, 6800);
-					});
-
-					window.addEventListener('resize', function(){
-						resize();
-					});
-
+					window.addEventListener('blur', doBlur);
+					window.addEventListener('focus', doFocus);
+					window.addEventListener('resize', doResize);
 
 					if (isTouchDev){
-						document.addEventListener('touchstart', function(event){
-							lightOn();
-						});
-
-						document.addEventListener('touchend', function(event){
-							lightOff();
-						});
+						document.addEventListener('touchstart', lightOn);
+						document.addEventListener('touchend', lightOff);
 					}else{
 						window.addEventListener('keydown', function(event){
 							switch(event.keyCode){
