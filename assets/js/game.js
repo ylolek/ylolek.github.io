@@ -16,7 +16,8 @@ document.addEventListener('DOMContentLoaded', function(event){
 		levelStartTime,
 		buildIndex = 0,
 		gameImg,
-		deltaT;
+		deltaT,
+		vectrexS = location.hash.trim().toLowerCase() == '#vt' ? true : false;
 
 		var render;
 		var player,
@@ -585,7 +586,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 			sounds.resetSfx();
 			sounds.resetBgSfx();
 
-			renderer.print('game over', gameImg, 114, 241, [222, 0, 0, 255]);
+			renderer.print('game over', gameImg, 114, 241, vectrexS ? [222, 222, 255, 255] : [222, 0, 0, 255]);
 
 			var GOID = window.setTimeout(function(){
 				window.clearTimeout(GOID);
@@ -985,7 +986,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 		var _loadResources = function(buildIndex){
 			try{
 				imageLoader.load([{
-					src : actLevel.spritesSrc
+					src : vectrexS ? actLevel.spritesSrcVT : actLevel.spritesSrc
 				}],
 				function(imgs){
 					//all loaded
@@ -1104,11 +1105,11 @@ document.addEventListener('DOMContentLoaded', function(event){
 						//play intro music
 						if (!restartLevel){
 							sounds.play('start-music');
-							renderer.print('player one', gameImg, 107, 169, [0, 222, 222, 255]);
+							renderer.print('player one', gameImg, 107, 169, vectrexS ? [222, 222, 255, 255] : [0, 222, 222, 255]);
 						}
 
 						_updateScores();
-						renderer.print(bonusLevel ? 'bonus!' : 'ready!', gameImg, 133, 241, [255, 255, 33, 255]);
+						renderer.print(bonusLevel ? 'bonus!' : 'ready!', gameImg, 133, 241, vectrexS ? [222, 222, 255, 255] : [255, 255, 33, 255]);
 					}
 
 					restartLevel = false;
