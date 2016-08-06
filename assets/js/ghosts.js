@@ -28,6 +28,7 @@ var ghosts = (function(){
 		eatenSpeed = 220,
 		actGhostsSpeed = 0,
 		ghostsFreezed = 0;
+		vectrexS = location.hash.trim().toLowerCase() == '#vt' ? true : false;	
 
 	var _getCells = function(valueArr){
 		var matchArr = [];
@@ -212,7 +213,8 @@ var ghosts = (function(){
 					ghost.inCage = true;
 					ghost.entity.props.speed = inCageSpeed;
 
-					renderer.rePaintCells(cellPos.col, cellPos.row, 1, 0, '#' + ((1<<24) * Math.random() | 0).toString(16));
+					var reMaterCol = vectrexS ? '#ffffff' : '#' + ((1<<24) * Math.random() | 0).toString(16);
+					renderer.rePaintCells(cellPos.col, cellPos.row, 1, 0, reMaterCol);
 
 					if (!ghost.toStartPos){
 						ghost.toStartPos = true;
