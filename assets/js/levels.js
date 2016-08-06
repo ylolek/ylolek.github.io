@@ -5,6 +5,7 @@ var levels = (function(){
 	//intro. not an actual level.
 	level[0] = {
 			spritesSrc : 'assets/img/gamesprites012.png',
+			spritesSrcVT : 'assets/img/gamesprites012_vt.png',
 			bgColor : '#000',
 			layout : [],
 			rows : 31,
@@ -614,6 +615,7 @@ var levels = (function(){
 	//level 1+
 	level[1] = {
 				spritesSrc : level[0].spritesSrc,
+				spritesSrcVT : level[0].spritesSrcVT,
 				bgColor : '#000',
 				layout : layouts.getLayout(1),
 				rows : 31,
@@ -764,4 +766,3 @@ var levels = (function(){
 		}
 	}
 }());
-
