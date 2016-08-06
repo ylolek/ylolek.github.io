@@ -2,6 +2,7 @@
 var cutscenes = (function(){
 	var secs = 0, gameWidth = 336;
 	var paused = false;
+	var vectrexS = location.hash.trim().toLowerCase() == '#vt' ? true : false;
 	var sceneProps = [{
 		isPaused : false,
 		hitScore : 0,
@@ -11,7 +12,7 @@ var cutscenes = (function(){
 		payBack : false,
 		comeBack : false,
 		playerIP : {},
-		ghostIP : {}
+		ghostIP : {},
 	}];
 
 	//intro loop, plays the intro
@@ -67,7 +68,7 @@ var cutscenes = (function(){
 
 			if (sceneProps[0].printI == 0){
 				var msg = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0 ? 'tap to start' : 'press space';
-				renderer.print(msg, gameImg, 8, 365, [4, 166, 121, 255]);
+				renderer.print(msg, gameImg, 8, 365, vectrexS ? [255, 255, 255, 255] : [4, 166, 121, 255]);
 				sceneProps[0].printI++;
 			}
 
@@ -103,7 +104,7 @@ var cutscenes = (function(){
 			}
 
 			if (secs >= 2.5 && sceneProps[0].printI == 2){
-				renderer.print('oikake-----"akabei"', gameImg, 58, 68, [222, 0, 0, 255]);
+				renderer.print('oikake-----"akabei"', gameImg, 58, 68, vectrexS ? [255, 255, 255, 255] : [222, 0, 0, 255]);
 				 sceneProps[0].printI++;
 			}
 
@@ -123,7 +124,7 @@ var cutscenes = (function(){
 			}
 
 			if (secs >= 4 && sceneProps[0].printI == 3){
-				renderer.print('machibuse--"pinky"', gameImg, 58, 106, [255, 181, 255, 255]);
+				renderer.print('machibuse--"pinky"', gameImg, 58, 106, vectrexS ? [255, 255, 255, 255] : [255, 181, 255, 255]);
 				sceneProps[0].printI++;
 			}
 
@@ -143,7 +144,7 @@ var cutscenes = (function(){
 			}
 
 			if (secs >= 5.5 && sceneProps[0].printI == 4){
-				renderer.print('kimagure---"aosuke"', gameImg, 58, 144, [0, 222, 222, 255]);
+				renderer.print('kimagure---"aosuke"', gameImg, 58, 144, vectrexS ? [255, 255, 255, 255] : [0, 222, 222, 255]);
 				sceneProps[0].printI++;
 			}
 
@@ -163,7 +164,7 @@ var cutscenes = (function(){
 			}
 
 			if (secs >= 7 && sceneProps[0].printI == 5){
-				renderer.print('otoboke----"guzuta"', gameImg, 58, 182, [255, 181, 33, 255]);
+				renderer.print('otoboke----"guzuta"', gameImg, 58, 182, vectrexS ? [255, 255, 255, 255] : [255, 181, 33, 255]);
 				sceneProps[0].printI++;
 			}
 
