@@ -17,7 +17,8 @@ document.addEventListener('DOMContentLoaded', function(event){
 		buildIndex = 0,
 		gameImg,
 		deltaT,
-		vectrexS = location.hash.trim().toLowerCase() == '#vt' ? true : false;
+		vectrexS = location.hash.trim().toLowerCase() == '#vt' ? true : false,
+		lightsOutS = location.hash.trim().toLowerCase() == '#lo' ? true : false;
 
 		var render;
 		var player,
@@ -36,6 +37,11 @@ document.addEventListener('DOMContentLoaded', function(event){
 		var CLPts =	[0, 100, 300, 500, 500, 700, 700, 1000, 1000, 2000, 2000, 3000, 3000, 5000];
 
 		var layoutCols = [[], [33, 33, 255, 255], [0, 214, 217, 255], [241, 110, 239, 255], [255, 0, 0, 255], [243, 163, 9, 255], [0, 255, 0, 255], [222, 222, 255, 255]];
+
+		if (lightsOutS) layoutCols.forEach(function(colorArr, index){
+			layoutCols[index] = [0, 0, 0, 255];
+		});
+
 		var layColIndex = 0;
 
 		var aF;
@@ -446,7 +452,6 @@ document.addEventListener('DOMContentLoaded', function(event){
 								window.clearTimeout(LRID);
 
 								paused = true;
-
 								if (playProps.lives <= 0){
 									_gameOver();
 								}else{
@@ -959,6 +964,13 @@ document.addEventListener('DOMContentLoaded', function(event){
 					clipH : player.clip.height
 				});
 
+				if (lightsOutS){					
+					if (playerPos.row != playProps.lastPlyrPos.row || playerPos.col != playProps.lastPlyrPos.col){
+						renderer.clr(renderer.lightsOCtx, 0, 0, gameWidth, gameHeight);
+						if (canReact) renderer.reDrawCells(gameImg, playerPos.col, playerPos.row, 3, 3, renderer.lightsOCtx, '#000000');
+					}
+				}
+
 				//show ghosts
 				if (showGhosts){
 					theGhosts.forEach(function(ghost){
@@ -1005,6 +1017,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 					});
 
 					//clean up
+					if (lightsOutS) renderer.clr(renderer.lightsOCtx, 0, 0, gameWidth, gameHeight);
 					renderer.clr(render.game.context, 0, 0, gameWidth, gameHeight);
 					renderer.clr(render.layout.context, 0, 0, gameWidth, gameHeight);
 					renderer.clr(render.console.context, 0, 0, gameWidth, gameHeight + 80);
