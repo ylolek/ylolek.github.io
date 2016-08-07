@@ -5,7 +5,7 @@ var renderer = (function(){
 	levelBgColor, cellWidth, cellHeight,
 	isPlayGround = false,
 	lightsOutS = location.hash.trim().toLowerCase() == '#lo' ? true : false;
-	lightsOutG = location.hash.trim().toLowerCase() == '#log' ? true : false;
+	lightsOutG = location.hash.trim().toLowerCase() == '#loga' ? true : false;
 	var chars = {
 		char : 	[
 				['||', '||', '||', '||', '.', '"', '"', '||', '||', '||', '||', '||', '||', '||', ' ', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '/', '-'],
