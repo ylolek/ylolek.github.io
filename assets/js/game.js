@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 		deltaT,
 		vectrexS = location.hash.trim().toLowerCase() == '#vt' ? true : false,
 		lightsOutS = location.hash.trim().toLowerCase() == '#lo' ? true : false;
+		lightsOutG = location.hash.trim().toLowerCase() == '#log' ? true : false;
 
 		var render;
 		var player,
@@ -984,6 +985,11 @@ document.addEventListener('DOMContentLoaded', function(event){
 							clipW : ghost.clip.width,
 							clipH : ghost.clip.height
 						});
+
+						if (lightsOutSG){	
+							var ghostCR = renderer.XYToColRow(ghost.position.x, ghost.position.y);
+							if (canReact) renderer.reDrawCells(gameImg, ghostCR.col, ghostCR.row, 2, 2, renderer.lightsOCtx, '#000000');
+						}
 					});
 				}
 
