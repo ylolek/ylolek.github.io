@@ -5,6 +5,7 @@ var renderer = (function(){
 	levelBgColor, cellWidth, cellHeight,
 	isPlayGround = false,
 	lightsOutS = location.hash.trim().toLowerCase() == '#lo' ? true : false;
+	lightsOutG = location.hash.trim().toLowerCase() == '#log' ? true : false;
 	var chars = {
 		char : 	[
 				['||', '||', '||', '||', '.', '"', '"', '||', '||', '||', '||', '||', '||', '||', ' ', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '/', '-'],
@@ -65,7 +66,7 @@ var renderer = (function(){
 				this.layoutCanvas = layoutA.canvas;
 				this.layoutCtx = layoutA.context;
 
-				if (lightsOutS){
+				if (lightsOutS || lightsOutG){
 					//lights out canvas
 					var lightsOA = this.setCanvas('lightsOCanvas', contProps.width, contProps.height, 'position: absolute; top: 36px; left: 0; max-width: 100%; z-index: 6; -webkit-transform: translate3d(0,0,0);');
 					this.lightsOCanvas = lightsOA.canvas;
