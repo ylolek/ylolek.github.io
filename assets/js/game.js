@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 		deltaT,
 		vectrexS = location.hash.trim().toLowerCase() == '#vt' ? true : false,
 		lightsOutS = location.hash.trim().toLowerCase() == '#lo' ? true : false;
-		lightsOutG = location.hash.trim().toLowerCase() == '#log' ? true : false;
+		lightsOutG = location.hash.trim().toLowerCase() == '#loga' ? true : false;
 
 		var render;
 		var player,
