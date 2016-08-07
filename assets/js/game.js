@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 		paused = true,
 		isWBlur = false,
 		restartLevel = false,
-		canReact = false,
+		canReact = false,d
 		bonusLevel = false,
 		isTouchDev = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0,
 		maxLevels = 256,
@@ -1050,7 +1050,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 						});
 					}else{//every other level will use level 1 properties
 						//draw layout
-						renderer.drawLayout(gameImg, layoutCols[layColIndex]);
+						if (!lightsOutS || !lightsOutG) renderer.drawLayout(gameImg, layoutCols[layColIndex]);
 
 						//create ghosts
 						ghosts.zzz = bonusLevel ? true : false;
