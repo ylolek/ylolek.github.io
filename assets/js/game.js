@@ -986,7 +986,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 							clipH : ghost.clip.height
 						});
 
-						if (lightsOutSG){	
+						if (lightsOutG){	
 							var ghostCR = renderer.XYToColRow(ghost.position.x, ghost.position.y);
 							if (canReact) renderer.reDrawCells(gameImg, ghostCR.col, ghostCR.row, 2, 2, renderer.lightsOCtx, '#000000');
 						}
