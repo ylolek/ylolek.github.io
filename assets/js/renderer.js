@@ -3,7 +3,8 @@ var renderer = (function(){
 	var gameContainer,
 	layout, levelIndex, gameLevel, cols, rows,
 	levelBgColor, cellWidth, cellHeight,
-	isPlayGround = false;
+	isPlayGround = false,
+	lightsOutS = location.hash.trim().toLowerCase() == '#lo' ? true : false;
 	var chars = {
 		char : 	[
 				['||', '||', '||', '||', '.', '"', '"', '||', '||', '||', '||', '||', '||', '||', ' ', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '/', '-'],
@@ -23,6 +24,8 @@ var renderer = (function(){
 		layoutCtx : null,
 		gameCanvas : null,
 		gameCtx : null,
+		lightsOCanvas : null,
+		lightsOCtx : null,
 		consoleCanvas : null,
 		consoleCtx : null,
 
@@ -62,13 +65,20 @@ var renderer = (function(){
 				this.layoutCanvas = layoutA.canvas;
 				this.layoutCtx = layoutA.context;
 
+				if (lightsOutS){
+					//lights out canvas
+					var lightsOA = this.setCanvas('lightsOCanvas', contProps.width, contProps.height, 'position: absolute; top: 36px; left: 0; max-width: 100%; z-index: 6; -webkit-transform: translate3d(0,0,0);');
+					this.lightsOCanvas = lightsOA.canvas;
+					this.lightsOCtx = lightsOA.context;
+				}
+
 				//game canvas
-				var gameA = this.setCanvas('gameCanvas', contProps.width, contProps.height, 'position: absolute; top: 36px; left: 0; max-width: 100%; z-index: 6; -webkit-transform: translate3d(0,0,0);');
+				var gameA = this.setCanvas('gameCanvas', contProps.width, contProps.height, 'position: absolute; top: 36px; left: 0; max-width: 100%; z-index: 7; -webkit-transform: translate3d(0,0,0);');
 				this.gameCanvas = gameA.canvas;
 				this.gameCtx = gameA.context;
 
 				//console canvas
-				var consoleA = this.setCanvas('consoleCanvas', contProps.width, contProps.height + 80, 'position: absolute; top: 0; left: 0; max-width: 100%; z-index: 7; -webkit-transform: translate3d(0,0,0);');
+				var consoleA = this.setCanvas('consoleCanvas', contProps.width, contProps.height + 80, 'position: absolute; top: 0; left: 0; max-width: 100%; z-index: 8; -webkit-transform: translate3d(0,0,0);');
 				this.consoleCanvas = consoleA.canvas;
 				this.consoleCtx = consoleA.context;
 
@@ -80,11 +90,12 @@ var renderer = (function(){
 				this.clr(this.consoleCtx, 0, 0, cellWidth * cols, cellHeight * rows + 80);
 
 				var layoutA = {canvas : this.layoutCanvas, context : this.layoutCtx};
+				var lightsOA = {canvas : this.lightsOCanvas, context : this.lightsOCtx};
 				var gameA = {canvas : this.gameCanvas, context : this.gameCtx};
 				var consoleA = {canvas : this.consoleCanvas, context : this.consoleCtx};
 			}
 
-			return { layout : layoutA, game : gameA, console : consoleA}
+			return { layout : layoutA, lightsO : lightsOA, game : gameA, console : consoleA}
 		},
 
 		setCanvas : function(canvasId, w, h, styleStr){
