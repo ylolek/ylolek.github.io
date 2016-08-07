@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 
 		var layoutCols = [[], [33, 33, 255, 255], [0, 214, 217, 255], [241, 110, 239, 255], [255, 0, 0, 255], [243, 163, 9, 255], [0, 255, 0, 255], [222, 222, 255, 255]];
 
-		if (lightsOutS) layoutCols.forEach(function(colorArr, index){
+		if (lightsOutS || lightsOutG) layoutCols.forEach(function(colorArr, index){
 			layoutCols[index] = [0, 0, 0, 255];
 		});
 
@@ -965,7 +965,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 					clipH : player.clip.height
 				});
 
-				if (lightsOutS){					
+				if (lightsOutS || lightsOutG){					
 					if (playerPos.row != playProps.lastPlyrPos.row || playerPos.col != playProps.lastPlyrPos.col){
 						renderer.clr(renderer.lightsOCtx, 0, 0, gameWidth, gameHeight);
 						if (canReact) renderer.reDrawCells(gameImg, playerPos.col, playerPos.row, 3, 3, renderer.lightsOCtx, '#000000');
