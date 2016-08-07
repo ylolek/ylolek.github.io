@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 		paused = true,
 		isWBlur = false,
 		restartLevel = false,
-		canReact = false,d
+		canReact = false,
 		bonusLevel = false,
 		isTouchDev = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0,
 		maxLevels = 256,
