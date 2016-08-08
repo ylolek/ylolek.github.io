@@ -333,7 +333,7 @@ var renderer = (function(){
 							//blue
 							consoleImg.data[i + 2] = rgbaArr[2];
 							//alpha
-							consoleImg.data[i + 3] = rgbaArr[3];
+							//consoleImg.data[i + 3] = rgbaArr[3];
 						}
 					}
 
