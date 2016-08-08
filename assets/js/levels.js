@@ -4,7 +4,7 @@ var levels = (function(){
 	var level = [];
 	//intro. not an actual level.
 	level[0] = {
-			spritesSrc : 'assets/img/gamesprites012.png',
+			spritesSrc : 'assets/img/gamesprites0141.png',
 			spritesSrcVT : 'assets/img/gamesprites012_vt.png',
 			bgColor : '#000',
 			layout : [],

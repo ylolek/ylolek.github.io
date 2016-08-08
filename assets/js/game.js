@@ -965,7 +965,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 					clipH : player.clip.height
 				});
 
-				if (lightsOutS || lightsOutG){					
+				if (lightsOutS || lightsOutG){
 					if (playerPos.row != playProps.lastPlyrPos.row || playerPos.col != playProps.lastPlyrPos.col){
 						renderer.clr(renderer.lightsOCtx, 0, 0, gameWidth, gameHeight);
 						if (canReact) renderer.reDrawCells(gameImg, playerPos.col, playerPos.row, 3, 3, renderer.lightsOCtx, '#000000');
@@ -986,7 +986,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 							clipH : ghost.clip.height
 						});
 
-						if (lightsOutG){	
+						if (lightsOutG){
 							var ghostCR = renderer.XYToColRow(ghost.position.x, ghost.position.y);
 							if (canReact) renderer.reDrawCells(gameImg, ghostCR.col, ghostCR.row, 2, 2, renderer.lightsOCtx, '#000000');
 						}
@@ -1050,7 +1050,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 						});
 					}else{//every other level will use level 1 properties
 						//draw layout
-						if (!lightsOutS || !lightsOutG) renderer.drawLayout(gameImg, layoutCols[layColIndex]);
+						renderer.drawLayout(gameImg, layoutCols[layColIndex]);
 
 						//create ghosts
 						ghosts.zzz = bonusLevel ? true : false;

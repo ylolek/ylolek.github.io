@@ -245,7 +245,8 @@ var renderer = (function(){
 				//set rgba channels
 				for (var i=0; i<ctxImgLen*4; i+=4){
 					//leave transparent parts out
-					if (ctxImg.data[i] == 33 && ctxImg.data[i + 1] == 33 && ctxImg.data[i + 2] == 255){
+					//if (ctxImg.data[i] == 33 && ctxImg.data[i + 1] == 33 && ctxImg.data[i + 2] == 255){
+					if (ctxImg.data[i] == 33 && ctxImg.data[i + 1] == 33){
 						//red
 						ctxImg.data[i] = rgbaArr[0];
 						//green
