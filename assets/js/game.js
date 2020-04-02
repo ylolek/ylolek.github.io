@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 		gameImg,
 		deltaT,
 		vectrexS = location.hash.trim().toLowerCase() == '#vt' ? true : false,
+		c19S = location.hash.trim().toLowerCase() == '#c19' ? true : false,
 		lightsOutS = location.hash.trim().toLowerCase() == '#lo' ? true : false;
 		lightsOutG = location.hash.trim().toLowerCase() == '#loga' ? true : false;
 
@@ -1002,9 +1003,16 @@ document.addEventListener('DOMContentLoaded', function(event){
 		}
 
 		var _loadResources = function(buildIndex){
+			var gameSrc = actLevel.spritesSrc;
+			if (vectrexS) {
+				gameSrc = actLevel.spritesSrcVT;
+			} else if (c19S) {
+				gameSrc = actLevel.spritesSrcC19;
+			}
+			
 			try{
 				imageLoader.load([{
-					src : vectrexS ? actLevel.spritesSrcVT : actLevel.spritesSrc
+					src : gameSrc
 				}],
 				function(imgs){
 					//all loaded
