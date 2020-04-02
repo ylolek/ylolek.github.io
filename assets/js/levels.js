@@ -6,7 +6,7 @@ var levels = (function(){
 	level[0] = {
 			spritesSrc : 'assets/img/gamesprites0141.png',
 			spritesSrcVT : 'assets/img/gamesprites012_vt.png',
-			spritesSrcC19 : 'assets/img/gamespritesc19.png',
+			spritesSrcC19 : 'assets/img/gamespritesc191.png',
 			bgColor : '#000',
 			layout : [],
 			rows : 31,
