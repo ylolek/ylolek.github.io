@@ -1009,7 +1009,8 @@ document.addEventListener('DOMContentLoaded', function(event){
 			} else if (c19S) {
 				gameSrc = actLevel.spritesSrcC19;
 			}
-			
+	
+			console.log('gameSrc', gameSrc);
 			try{
 				imageLoader.load([{
 					src : gameSrc
