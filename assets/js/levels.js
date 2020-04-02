@@ -617,6 +617,7 @@ var levels = (function(){
 	level[1] = {
 				spritesSrc : level[0].spritesSrc,
 				spritesSrcVT : level[0].spritesSrcVT,
+				spritesSrcC19 : level[0].spritesSrcC19,
 				bgColor : '#000',
 				layout : layouts.getLayout(1),
 				rows : 31,
